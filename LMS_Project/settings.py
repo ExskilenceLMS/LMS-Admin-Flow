@@ -23,12 +23,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-^@eeb&6o=6x!dv6hdtm+x*@xc=!#cv)ibjx6n^#((z^zet$fa3'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
-
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+]
 # Application definition
+MSSQL_SERVER_NAME = 'slnkshmtbsil.database.windows.net'
+MSSQL_DATABASE_NAME = 'exe_test'
+MSSQL_USERNAME = 'tpssa'
+MSSQL_PWD = 'TPSuser@sa123'
+MSSQL_DRIVER =  'ODBC Driver 17 for SQL Server'
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -55,6 +62,21 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
 ]
 
+# blob
+DEFAULT_FILE_STORAGE = 'storages.backends.azure_storage.AzureStorage' 
+
+AZURE_ACCOUNT_NAME = 'storeholder'
+AZURE_ACCOUNT_KEY = 'QxlUJdp8eSoPeQPas4NigSkXg6KMep7z+fPQ5CpPm0kRfjg7Q0lFmVEIyhU4ohFLFdSqntDAG6MY84elTfecnw=='
+AZURE_CONTAINER = 'tpdata'
+
+AZURE_CUSTOM_DOMAIN = f'{AZURE_ACCOUNT_NAME}.blob.core.windows.net'
+
+# Set the custom domain for the storage account
+AZURE_CUSTOM_DOMAIN = f'{AZURE_ACCOUNT_NAME}.blob.core.windows.net'
+
+# Set the default ACL to 'private'
+AZURE_DEFAULT_ACL = 'private'
+#blob
 ROOT_URLCONF = 'LMS_Project.urls'
 
 TEMPLATES = [
@@ -80,11 +102,11 @@ WSGI_APPLICATION = 'LMS_Project.wsgi.application'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 # DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
+#     # 'default': {
+#     #     'ENGINE': 'django.db.backends.sqlite3',
+#     #     'NAME': BASE_DIR / 'db.sqlite3',
+#     # }
+# # }
 # 'default': {
 #         'ENGINE': 'djongo',
 #         'NAME': 'ExskilenceNEW',
@@ -96,6 +118,8 @@ WSGI_APPLICATION = 'LMS_Project.wsgi.application'
 #             'authMechanism': 'SCRAM-SHA-1',
 #         }
 #     }
+
+
 DATABASES = {
     'mongodb': {
         'ENGINE': 'djongo',
@@ -109,16 +133,44 @@ DATABASES = {
     },
     'default': {
         'ENGINE': 'mssql',
-        'NAME': 'LMSdb',
-        'USER': 'sa',
-        'PASSWORD': 'sql2014!',
-        'HOST': 'localhost',
+        'NAME': 'eussdb',
+        'USER': 'euserblr',#'eudev',#
+        'PASSWORD': '6han4Sy5#',#'Devlop99@#',#
+        'HOST': 'slnsgdhutmtbs.database.windows.net',
+       
+        # 'HOST': 'Rudresh\\SQLEXPRESS',
         'PORT': '1433',
         'OPTIONS': {
             'driver': 'ODBC Driver 17 for SQL Server',
+            'trustServerCertificate': 'yes',  # Add this to avoid SSL errors
         },
     }
 }
+# DATABASES = {
+#     'mongodb': {
+#         'ENGINE': 'djongo',
+#         'NAME': 'LMSmongodb',
+#         'CLIENT': {
+#             'host': 'mongodb+srv://kecoview:FVy5fqqCtQy3KIt6@cluster0.b9wmlid.mongodb.net/',
+#             'username': 'kecoview',
+#             'password': 'FVy5fqqCtQy3KIt6',
+#             'authMechanism': 'SCRAM-SHA-1',
+#         }
+#     },
+#     'default': {
+#         'ENGINE': 'mssql',
+#         'NAME': 'LMSdb',
+#         'USER': 'sa',
+#         'PASSWORD': 'sql2014!',
+#         'HOST': 'localhost',
+#         'PORT': '1433',
+#         'OPTIONS': {
+#             'driver': 'ODBC Driver 17 for SQL Server',
+#         },
+#     }
+# }
+
+
 
 
 # Password validation
@@ -162,6 +214,6 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MIGRATION_MODULES = {
-    # 'LMS_Mongodb_App': None,
-    'LMS_MSSQLdb_App': None
+    'LMS_Mongodb_App': None,
+    # 'LMS_MSSQLdb_App': None
 }
