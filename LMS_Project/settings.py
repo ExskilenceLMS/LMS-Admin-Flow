@@ -29,6 +29,7 @@ ALLOWED_HOSTS = ['*']
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
+    "https://exskilence-suite.azurewebsites.net",
 ]
 # Application definition
 MSSQL_SERVER_NAME = 'slnkshmtbsil.database.windows.net'
