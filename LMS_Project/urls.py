@@ -31,7 +31,7 @@ from AdminFlow.ContentCreation import sqlviews as sql_views
 from AdminFlow.ContentCreation import contentCreation as content_creation_views
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("hello/",admin_views.hello,name="hello"),
+    path("/",admin_views.home,name="hello"),
 
     path('user/<str:mail>/',login_views.login,name="login"),
     path('add_admin/',login_views.add_admin,name="add_admin"),
