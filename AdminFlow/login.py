@@ -4,7 +4,7 @@ import json
 from rest_framework.decorators import api_view
 from django.http import  JsonResponse
 from datetime import datetime, timedelta
-
+from .course import get_ist_time
 @api_view(['GET'])
 def login(request,mail):
     try:
@@ -41,6 +41,8 @@ def add_admin(request):
                     admin_email=data['admin_email'],
                     phone=data['phone'],
                     category=data['category'],
+                    reg_date=get_ist_time(),
+                    exp_date=get_ist_time() + timedelta(days=365),
                 )
                 admin.save()  
             
