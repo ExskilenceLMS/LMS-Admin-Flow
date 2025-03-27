@@ -5,10 +5,12 @@ from rest_framework.decorators import api_view
 from django.http import  JsonResponse
 from datetime import datetime, timedelta
 import ast
+from django.utils import timezone
 
 def get_ist_time():
-        
-        return  datetime.utcnow().__add__(timedelta(hours=15, minutes=30))
+        today =timezone.now() + timedelta(hours=5, minutes=30)
+        print(today)
+        return  today
 
 @api_view(['POST'])
 def create_course(request):
@@ -29,7 +31,8 @@ def create_course(request):
                     course_level=data['course_level'],
                     created_by=data['by'],
                     tracks=track_names[0:-1] if track_names[-1]=="," else track_names,
-                    created_at=get_ist_time()
+                    created_at=get_ist_time(),
+                    modified_at = get_ist_time()
                 )
                 course.save()  
             elif 'course_id' in data:

@@ -12,6 +12,7 @@ from django.db.models import Count, Prefetch,Q
 from azure.storage.blob import ContentSettings
 import os
 from azure.storage.blob import BlobServiceClient
+import AdminFlow.course as course
 
 
 blob_service_client = BlobServiceClient(account_url=f"https://{AZURE_ACCOUNT_NAME}.blob.core.windows.net/",credential=AZURE_ACCOUNT_KEY)
@@ -255,7 +256,7 @@ def course_Plan(request):
                     )
                     qn_id = os.path.splitext(current_file)[0]
                     question = questions.objects.get(question_id=qn_id)
-                    question.last_updated_time = data.get('LastUpdated')
+                    question.last_updated_time = course.get_ist_time()
                     question.last_updated_by = last_updated_by
                     question.tags = ','.join(data.get('Tags', [])) if isinstance(data.get('Tags'), list) else data.get('Tags', '')  # Store as CSV in DB
                     question.save()
@@ -323,6 +324,8 @@ def course_Plan(request):
                         question_id=qn_id,
                         sub_topic_id=subtopic,
                         question_type='coding',
+                        creation_time=course.get_ist_time(),
+                        last_updated_time=course.get_ist_time(),
                         level=level,
                         created_by=data.get('CreatedBy'),
                         last_updated_by=last_updated_by,
@@ -376,6 +379,8 @@ def course_Plan(request):
                         question_type='mcq',
                         level=level,
                         created_by=data.get('CreatedBy'),
+                        creation_time=course.get_ist_time(),
+                        last_updated_time=course.get_ist_time(),
                         last_updated_by=last_updated_by,
                         reviewed_by='',
                         tags=','.join(data.get('Tags', [])) if isinstance(data.get('Tags'), list) else data.get('Tags', '')

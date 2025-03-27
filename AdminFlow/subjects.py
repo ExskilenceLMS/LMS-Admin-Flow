@@ -42,7 +42,8 @@ def create_subject(request):
                     subject_alt_name=data.get('subject_alt_name', ''),
                     subject_description=data.get('subject_description', ''),
                     created_by=data['by'],
-                    created_at=course.get_ist_time()
+                    created_at=course.get_ist_time(),
+                    modified_at = course.get_ist_time()
                 )
                 subject.save()
 

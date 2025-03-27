@@ -96,7 +96,8 @@ def create_topic(request):
                 topic_alt_name=topic_alt_name,
                 subject_id=subject_instance,
                 created_by=data['by'],
-                created_at=course.get_ist_time()
+                created_at=course.get_ist_time(),
+                modified_at = course.get_ist_time()
             )
                 topic.save()
             else:

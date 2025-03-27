@@ -20,7 +20,8 @@ def create_track(request):
                     track_id=track_id,
                     track_name=data['track_name'],
                     created_by=data['by'],
-                    created_at=course.get_ist_time()
+                    created_at=course.get_ist_time(),
+                    modified_at = course.get_ist_time()
                 )
                 track.save()  
             elif 'track_id' in data:

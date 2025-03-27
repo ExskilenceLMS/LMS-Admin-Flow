@@ -13,7 +13,7 @@ from django.views.decorators.csrf import csrf_exempt
 from azure.storage.blob import ContentSettings
 import os
 from azure.storage.blob import BlobServiceClient
-
+import AdminFlow.course as course
 blob_service_client = BlobServiceClient(account_url=f"https://{AZURE_ACCOUNT_NAME}.blob.core.windows.net/",credential=AZURE_ACCOUNT_KEY)
 container_client = blob_service_client.get_container_client(AZURE_CONTAINER)
 

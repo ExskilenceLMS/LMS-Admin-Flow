@@ -90,7 +90,8 @@ def create_subTopic(request):
                     sub_topic_alt_name=sub_topic_alt_name,
                     topic_id=topic_instance,
                     created_by=data['by'],
-                    created_at=course.get_ist_time()
+                    created_at=course.get_ist_time(),
+                    modified_at = course.get_ist_time()
                 )
                 print("3")
                 subtopic.save()

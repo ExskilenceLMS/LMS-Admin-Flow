@@ -1,5 +1,5 @@
 from django.db import models
-
+ 
 # Create your models here.
 # 1
 class tracks(models.Model):
@@ -8,9 +8,9 @@ class tracks(models.Model):
     track_name_searchable = models.CharField(max_length=50)
     track_description = models.TextField()
     created_by = models.CharField(max_length=100)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField()
     modified_by = models.CharField(max_length=100, null=True, blank=True)
-    modified_at = models.DateTimeField(auto_now=True)
+    modified_at = models.DateTimeField()
     action = models.CharField(max_length=100, null=True, blank=True)
     del_row = models.BooleanField(default=False)
     def __str__(self):
@@ -25,16 +25,16 @@ class subjects(models.Model):
     subject_alt_name = models.TextField()
     subject_description = models.TextField()
     created_by = models.CharField(max_length=100)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField()
     modified_by = models.CharField(max_length=100, null=True, blank=True)
-    modified_at = models.DateTimeField(auto_now=True)
+    modified_at = models.DateTimeField()
     action = models.CharField(max_length=100, null=True, blank=True)
     del_row = models.BooleanField(default=False)
-
-
+ 
+ 
     def __str__(self):
         return self.subject_name
-
+ 
     class Meta:
         db_table = 'subjects'
 # 3
@@ -45,12 +45,12 @@ class topics(models.Model):
     topic_alt_name = models.CharField(max_length=50, null=True, blank=True)
     topic_description = models.TextField()
     created_by = models.CharField(max_length=100)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField()
     modified_by = models.CharField(max_length=100, null=True, blank=True)
-    modified_at = models.DateTimeField(auto_now=True)
+    modified_at = models.DateTimeField()
     action = models.CharField(max_length=100, null=True, blank=True)
     del_row = models.BooleanField(default=False)
-
+ 
     def __str__(self):
         return self.topic_name
     class Meta:
@@ -67,18 +67,18 @@ class sub_topics(models.Model):
     mcq = models.IntegerField(null=True, blank=True)
     coding = models.IntegerField(null=True, blank=True)
     created_by = models.CharField(max_length=100)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField()
     modified_by = models.CharField(max_length=100, null=True, blank=True)
-    modified_at = models.DateTimeField(auto_now=True)
+    modified_at = models.DateTimeField()
     action = models.CharField(max_length=100, null=True, blank=True)
     del_row = models.BooleanField(default=False)
-
+ 
     def __str__(self):
         return self.sub_topic_name
-    
+   
     class Meta:
         db_table = 'sub_topics'
-
+ 
 # 5
 class courses(models.Model):
     course_id = models.CharField(max_length=20, unique=True)
@@ -86,16 +86,16 @@ class courses(models.Model):
     course_description = models.TextField()
     course_level = models.CharField(max_length=20)
     created_by = models.CharField(max_length=100)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField()
     modified_by = models.CharField(max_length=100, null=True, blank=True)
-    modified_at = models.DateTimeField(auto_now=True)
+    modified_at = models.DateTimeField()
     action = models.CharField(max_length=100, null=True, blank=True)
     tracks= models.TextField(default=None, blank=True, null=True)
     del_row = models.BooleanField(default=False)
-
+ 
     def __str__(self):
         return self.course_name
-
+ 
     class Meta:
         db_table = 'courses'
 # 6
@@ -108,12 +108,12 @@ class course_subjects(models.Model):
     is_mandatory = models.BooleanField()
     path = models.CharField(max_length=250)
     del_row = models.BooleanField(default=False)
-
+ 
     def __str__(self):
         return f"{self.course_id.course_name} - {self.subject_id.subject_name}"
     class Meta:
         db_table = 'course_subjects'
-# 7 
+# 7
 class course_plan_details(models.Model):
     course_id = models.ForeignKey(courses, on_delete=models.CASCADE)
     subject_id = models.ForeignKey(subjects, on_delete=models.CASCADE)
@@ -123,7 +123,7 @@ class course_plan_details(models.Model):
     day_date = models.DateTimeField()
     duration_in_hours = models.IntegerField()
     del_row = models.BooleanField(default=False)
-
+ 
     def __str__(self):
         return f"{self.course_id.course_name} - {self.subject_id.subject_name}"
     class Meta:
@@ -138,7 +138,7 @@ class batches(models.Model):
     start_date = models.DateTimeField()
     indicative_date = models.DateTimeField()
     del_row = models.BooleanField(default=False)
-
+ 
     def __str__(self):
         return self.batch_name
     class Meta:
@@ -193,12 +193,11 @@ class trainers(models.Model):
     leetcode = models.CharField(max_length=100, blank=True, null=True)
     hackerrank = models.CharField(max_length=100, blank=True, null=True)
     del_row = models.BooleanField(default=False)
-
+ 
     def __str__(self):
         return f"{self.trainer_name}"
     class Meta:
         db_table = 'trainers'
-
 # 11
 class trainer_review_comments(models.Model):
     comment_id = models.CharField(max_length=20, primary_key=True)
@@ -209,10 +208,10 @@ class trainer_review_comments(models.Model):
     comment = models.CharField(max_length=20)
     date_time = models.DateTimeField()
     del_row = models.BooleanField(default=False)
-
+ 
     class Meta:
         db_table = 'trainer_review_comments'
-
+ 
 # 12
 class test_details(models.Model):
     test_id = models.CharField(max_length=20, primary_key=True)
@@ -229,10 +228,10 @@ class test_details(models.Model):
     tags = models.CharField(max_length=20)
     test_date_and_time = models.DateTimeField()
     del_row = models.BooleanField(default=False)
-
+ 
     def __str__(self):
         return self.test_name
-
+ 
     class Meta:
         db_table = 'test_details'
 # 13
@@ -241,14 +240,14 @@ class questions(models.Model):
     question_type = models.CharField(max_length=20)
     level = models.CharField(max_length=20)
     created_by = models.CharField(max_length=100)
-    creation_time = models.DateTimeField(auto_now_add=True)
-    last_updated_time = models.DateTimeField(auto_now=True)
+    creation_time = models.DateTimeField()
+    last_updated_time = models.DateTimeField()
     last_updated_by = models.CharField(max_length=100,null=True, blank=True)
     reviewed_by = models.CharField(max_length=20, null=True, blank=True)
     tags = models.CharField(max_length=20, null=True, blank=True)
     sub_topic_id = models.ForeignKey(sub_topics, on_delete=models.SET_NULL, null=True)
     del_row = models.BooleanField(default=False)
-
+ 
     class Meta:
         db_table = 'questions'
 # 14
@@ -259,11 +258,11 @@ class test_sections(models.Model):
     sub_topic_id = models.ForeignKey(sub_topics, on_delete=models.SET_NULL, null=True)
     question_id = models.ForeignKey(questions, on_delete=models.SET_NULL, null=True)
     del_row = models.BooleanField(default=False)
-
+ 
     class Meta:
         db_table = 'test_sections'
-
-# 15 
+ 
+# 15
 class student_activities(models.Model):
     student_id = models.ForeignKey(students_info,  on_delete=models.SET_NULL, null=True)
     subject_id = models.ForeignKey(subjects,  on_delete=models.SET_NULL, null=True)
@@ -273,17 +272,17 @@ class student_activities(models.Model):
     activity_topic = models.ForeignKey(topics, on_delete=models.SET_NULL, null=True)
     activity_subtopic = models.ForeignKey(sub_topics, on_delete=models.SET_NULL, null=True)
     del_row = models.BooleanField(default=False)
-
+ 
     class Meta:
         db_table = 'student_activities'
-
-# 16 
+ 
+# 16
 class student_app_usage(models.Model):
     student_id = models.CharField(max_length=20)
     logged_in = models.DateTimeField()
     logged_out = models.DateTimeField()
     del_row = models.BooleanField(default=False)
-
+ 
     class Meta:
         db_table = 'student_app_usage'
 # 17    
@@ -293,7 +292,7 @@ class college_details(models.Model):
     center_name = models.CharField(max_length=20)
     college_code = models.CharField(max_length=20)
     del_row = models.BooleanField(default=False)
-
+ 
     class Meta:
         db_table = 'college_details'
 # 18
@@ -302,11 +301,12 @@ class branch_details(models.Model):
     branch_id = models.CharField(max_length=20)
     branch = models.CharField(max_length=20)
     del_row = models.BooleanField(default=False)
-
+ 
     class Meta:
         db_table = 'branch_details'
-
+ 
 # class ranks(models.Model):
+#19
 class admins(models.Model):
     admin_id = models.CharField(max_length=20, primary_key=True)
     admin_first_name = models.CharField(max_length=100)
@@ -315,9 +315,9 @@ class admins(models.Model):
     phone = models.CharField(max_length=20)
     activity_status = models.CharField(max_length=20)
     category = models.CharField(max_length=20)
-    reg_date = models.DateTimeField(auto_now_add=True)
+    reg_date = models.DateTimeField()
     exp_date = models.DateTimeField(null=True, blank=True)
     del_row = models.BooleanField(default=False)
- 
+
     class Meta:
-        db_table = 'admins'
+        db_table = 'admins'   
