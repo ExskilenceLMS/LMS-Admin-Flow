@@ -5,6 +5,7 @@ from rest_framework.decorators import api_view
 from django.http import  JsonResponse
 from datetime import datetime, timedelta
 from AdminFlow.course import get_ist_time
+
 @api_view(['GET'])
 def login(request,mail):
     try:
