@@ -1,6 +1,9 @@
 from django.shortcuts import render
 from rest_framework.decorators import api_view
-from django.http import HttpResponse
-@api_view(['GET'])
-def hello(request):
-    return HttpResponse({'hello': 'world'})
+from django.http import HttpResponse,JsonResponse
+from datetime import datetime, timedelta
+
+ONTIME = datetime.utcnow().__add__(timedelta(hours=5,minutes=30))
+@api_view(['GET'])  
+def home(request):
+    return JsonResponse({"message": "Successfully Deployed LMS Admin Flow on Azure at "+ str(ONTIME)},safe=False,status=200)
