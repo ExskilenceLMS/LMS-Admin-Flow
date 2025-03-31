@@ -26,6 +26,7 @@ from AdminFlow import topics as topics_views
 from AdminFlow import sub_topic as sub_topic_views
 from AdminFlow import track as track_views
 from AdminFlow import login as login_views
+from AdminFlow import subject_plan as subject_plan_views
 
 from AdminFlow.ContentCreation import sqlviews as sql_views
 from AdminFlow.ContentCreation import contentCreation as content_creation_views
@@ -79,8 +80,8 @@ urlpatterns = [
 
     path('create_track/',track_views.create_track,name='create_track'),
     path('get_all_tracks/',track_views.get_all_tracks,name='get_all_tracks'),
-
-
+    path('get_all_course_tracks_and_subjects/' , subject_plan_views.get_all_course_tracks_and_subjects,name="get_all_course_tracks_and_subjects"),
+    path('topics_by_subject/<str:subject_id>/', subject_plan_views.topics_by_subject,name="topics_by_subject"),
 
 
 
