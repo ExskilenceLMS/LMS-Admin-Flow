@@ -80,6 +80,7 @@ urlpatterns = [
 
     path('create_track/',track_views.create_track,name='create_track'),
     path('get_all_tracks/',track_views.get_all_tracks,name='get_all_tracks'),
+    path('delete_track/',track_views.delete_track,name='delete_track'),
     path('get_all_course_tracks_and_subjects/' , subject_plan_views.get_all_course_tracks_and_subjects,name="get_all_course_tracks_and_subjects"),
     path('topics_by_subject/<str:subject_id>/', subject_plan_views.topics_by_subject,name="topics_by_subject"),
     path('get_all_subtopics_data/<str:topic_id>',subject_plan_views.get_all_subtopics_data,name="get_all_subtopics_data"),

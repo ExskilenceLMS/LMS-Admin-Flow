@@ -109,3 +109,15 @@ def get_all_tracks(request):
         
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
+
+
+@api_view(['POST'])
+def delete_track(request):
+    try:
+        data = json.loads(request.body)
+        track = tracks.objects.get(track_id=data['track_id'])
+        track.del_row = True
+        track.save()  
+        return JsonResponse({'message': 'Track deleted successfully'})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
