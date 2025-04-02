@@ -142,7 +142,7 @@ DATABASES = {
         # 'HOST': 'Rudresh\\SQLEXPRESS',
         'PORT': '1433',
         'OPTIONS': {
-            'driver': 'ODBC Driver 17 for SQL Server',
+            'driver': 'ODBC Driver 18 for SQL Server',
             'trustServerCertificate': 'yes',  # Add this to avoid SSL errors
         },
     }
