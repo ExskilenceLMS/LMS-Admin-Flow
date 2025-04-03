@@ -85,6 +85,7 @@ class courses(models.Model):
     course_name = models.CharField(max_length=50)
     course_description = models.TextField()
     course_level = models.CharField(max_length=20)
+    Existing_Subjects = models.CharField(max_length=100,null=True,blank=True)
     created_by = models.CharField(max_length=100)
     created_at = models.DateTimeField()
     modified_by = models.CharField(max_length=100, null=True, blank=True)
