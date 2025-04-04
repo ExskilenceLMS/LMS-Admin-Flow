@@ -10,6 +10,7 @@ from azure.storage.blob import BlobServiceClient
 import AdminFlow.course as get_ist_time
 from LMS_Project.settings import *
 from django.db.models import Count, Q
+from datetime import datetime
 
 blob_service_client = BlobServiceClient(account_url=f"https://{AZURE_ACCOUNT_NAME}.blob.core.windows.net/",credential=AZURE_ACCOUNT_KEY)
 container_client = blob_service_client.get_container_client(AZURE_CONTAINER)
@@ -362,28 +363,50 @@ def save_daywise(request):
     try:
         if request.method != 'POST':
             return JsonResponse({'message': 'Method not allowed'}, status=405)
-
         data = json.loads(request.body)
         course = data.get("course_id")
         batch_id=data.get("batch_id")
         daywise = data.get('schedule')
-        now = datetime.now()
         course_id = f"{course}_{batch_id}"
-
-        print('check',course_id)
-
         blob_path = f"lms_daywise/{course}/{course_id}.json"
-
         json_data = json.dumps(daywise, ensure_ascii=False, indent=4)
         blob_client = blob_service_client.get_blob_client(container=AZURE_CONTAINER, blob=blob_path)
         blob_client.upload_blob(json_data, overwrite=True)
+        actual_course_id=courses.objects.get(course_id=course)
+        for key, value in daywise.items():
+            for i, entry in enumerate(value):
+                start_date_str = entry['date']  
+                start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
+                if i==0:
+                    start_date_value=start_date.replace(hour=00, minute=00, second=00)
+                if i == len(value) - 1:  
+                    end_date = start_date.replace(hour=23, minute=59, second=59)
+                else:
+                    end_date = start_date.replace(hour=23, minute=59, second=59)
+                subject = subjects.objects.filter(subject_name=key, del_row=False).first() 
 
+            if not (course_subjects.objects.filter(subject_id=subject,course_id=actual_course_id).exists()):
+                course_subjects.objects.create(subject_id=subject,
+                                                course_id=actual_course_id,
+                                                start_date=start_date_value,
+                                                end_date=end_date,
+                                                duration_in_days=(end_date-start_date_value).days,
+                                                is_mandatory=True,
+                                                path="https://images.unsplash.com/photo-1515879218367-8466d910aaa4?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                                                )
+                
+            else:
+                exist_object=course_subjects.objects.filter(subject_id=subject,course_id=actual_course_id).first()
+                exist_object.start_date=start_date_value
+                exist_object.end_date=end_date
+                exist_object.duration_in_days=(end_date-start_date_value).days
+                exist_object.save()
+            print((end_date-start_date_value).days)
         return JsonResponse({
                         "status": "success",
                         "message": "Daywise details saved successfully",
                         "path": blob_path
                     })
-
     except json.JSONDecodeError:
         return JsonResponse({'message': 'Invalid JSON data'}, status=400)
     except Exception as e:
