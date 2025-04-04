@@ -13,7 +13,7 @@ blob_service_client = BlobServiceClient(account_url=f"https://{AZURE_ACCOUNT_NAM
 container_client = blob_service_client.get_container_client(AZURE_CONTAINER)
 @api_view(['GET'])
 def fetch_rules(request):
-    path='LMS_Rules/Rules.json'
+    path='lms_rules/rules.json'
     try:
         blob_client = container_client.get_blob_client(path)
         download_stream = blob_client.download_blob()
@@ -26,9 +26,11 @@ def fetch_rules(request):
 def update_rules(request):
     try:
         data = json.loads(request.body)
-        path='LMS_Rules/Rules.json'
+        path='lms_rules/rules.json'
         blob_client = container_client.get_blob_client(path)
         blob_client.upload_blob(json.dumps(data), overwrite=True)
         return JsonResponse({'message': 'Rules updated successfully'})
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+    
+    

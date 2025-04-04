@@ -86,9 +86,11 @@ urlpatterns = [
     path('get_all_subtopics_data/<str:topic_id>',subject_plan_views.get_all_subtopics_data,name="get_all_subtopics_data"),
     path('get_content_for_subtopic/',subject_plan_views.get_content_for_subtopic,name="get_content_for_subtopic"),
     path('get_questions_data_by_subtopic/',subject_plan_views.get_questions_data_by_subtopic,name="get_questions_data_by_subtopic"),
-    path('get_course_subjects/',subject_plan_views.get_course_subjects,name="get_course_subjects"),
-
-
+    path('Content_creation/get_course_subjects/',subject_plan_views.get_course_subjects,name="get_course_subjects"),
+    path('Content_creation/save_subject_plans_details/', subject_plan_views.save_subject_plans_details, name='save_subject_plans_details'),
+    path("Content_creation/get_courses/",subject_plan_views.get_all_courses,name="get_all_courses"),
+    path('Content_creation/get_all_data_of_course/',subject_plan_views.get_all_data_of_course,name='get_all_data_of_course'),
+    path('Content_creation/save_daywise/',subject_plan_views.save_daywise,name='save_daywise'),
 
 
 
@@ -105,7 +107,6 @@ urlpatterns = [
     path('Content_creation/get_specific_question/',content_creation_views.get_specific_question,name="get_specific_questions"),
     path('Content_creation/get_content_for_subtopic/',content_creation_views.get_content_for_subtopic,name="get_content_for_subtopic"),
     path('Content_creation/content/',content_creation_views.content,name="content"),
-
 
 ]
 

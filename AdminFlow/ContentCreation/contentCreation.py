@@ -24,7 +24,7 @@ def dashboard_data(request):
     if request.method == 'GET':
         try:
             # Fetch all subjects and annotate them with the total count of questions
-            subjects_list = subjects.objects.annotate(
+            subjects_list = subjects.objects.filter(del_row=False).annotate(
                 total_questions=Count('topics__sub_topics__questions')
             ).values('subject_id', 'subject_name', 'total_questions')
 
@@ -146,9 +146,9 @@ def get_questions_list(request):
             subject_id = subtopic_id[:2]
             topic_id = subtopic_id[:-2]
             if content_type.lower() == 'mcq':
-                folder_path = f"LMSActualData/{subject_id}/{topic_id}/{subtopic_id}/MCQ/"
+                folder_path = f"subjects/{subject_id}/{topic_id}/{subtopic_id}/mcq/"
             elif content_type.lower() == 'coding':
-                folder_path = f"LMSActualData/{subject_id}/{topic_id}/{subtopic_id}/Coding/"
+                folder_path = f"subjects/{subject_id}/{topic_id}/{subtopic_id}/coding/"
             else:
                 return JsonResponse({'error': 'Invalid content type'}, status=400)
             blobs = container_client.list_blobs(name_starts_with=folder_path)
@@ -171,7 +171,7 @@ def course_Plan(request):
             last_updated_by = data.get('Last_Updated_by')
             subject_id = subtopic_id[:2]
             topic_id = subtopic_id[:-2]
-            subtopic_folder = f"LMSActualData/{subject_id}/{topic_id}/{subtopic_id}/"
+            subtopic_folder = f"subjects/{subject_id}/{topic_id}/{subtopic_id}/"
             level_char = level[0].lower()
             def get_next_number(folder_path, file_pattern):
                 existing_files = list(container_client.list_blobs(name_starts_with=folder_path))
@@ -193,9 +193,9 @@ def course_Plan(request):
             if current_file:
                 try:
                     if content_type == 'coding':
-                        blob_name = f"{subtopic_folder}Coding/{current_file}"
+                        blob_name = f"{subtopic_folder}coding/{current_file}"
                     elif content_type == 'mcq':
-                        blob_name = f"{subtopic_folder}MCQ/{current_file}"
+                        blob_name = f"{subtopic_folder}mcq/{current_file}"
                     else:
                         return JsonResponse({'error': 'Invalid content type'}, status=400)
                     blob_client = container_client.get_blob_client(blob_name)
@@ -298,7 +298,7 @@ def course_Plan(request):
                         'Query': data.get('Query'),
                         'Table': data.get('Table')
                     }
-                    coding_folder = f"{subtopic_folder}Coding/"
+                    coding_folder = f"{subtopic_folder}coding/"
                     file_pattern = f"q{subtopic_id}c{level_char}m"
                     next_coding_number = get_next_number(coding_folder, file_pattern)
                     if next_coding_number > 99:
@@ -351,7 +351,7 @@ def course_Plan(request):
                         'Explanation': data.get('Explanation'),
                         'LastUpdated': data.get('LastUpdated'),
                     }
-                    mcq_folder = f"{subtopic_folder}MCQ/"
+                    mcq_folder = f"{subtopic_folder}mcq/"
                     file_pattern = f"q{subtopic_id}m{level_char}m"
                     next_mcq_number = get_next_number(mcq_folder, file_pattern)
                     if next_mcq_number > 99:
@@ -413,9 +413,9 @@ def get_specific_question(request):
             content_type = question_filename[15] 
 
             if content_type.lower() == 'c':
-                folder_path = f"LMSActualData/{subject_id}/{topic_id}/{subtopic_id}/Coding/"
+                folder_path = f"subjects/{subject_id}/{topic_id}/{subtopic_id}/coding/"
             elif content_type.lower() == 'm':
-                folder_path = f"LMSActualData/{subject_id}/{topic_id}/{subtopic_id}/MCQ/"
+                folder_path = f"subjects/{subject_id}/{topic_id}/{subtopic_id}/mcq/"
             else:
                 return JsonResponse({'error': 'Invalid content type in filename'}, status=400)
 
@@ -448,7 +448,7 @@ def get_content_for_subtopic(request):
                 return JsonResponse({'error': 'subtopic_id is required'}, status=400)
             subject_id = subtopic_id[:2]
             topic_id = subtopic_id[:-2]
-            subtopic_folder = f"LMSActualData/{subject_id}/{topic_id}/{subtopic_id}/"
+            subtopic_folder = f"subjects/{subject_id}/{topic_id}/{subtopic_id}/"
             content_folder = subtopic_folder + "content/"
             content_filename = f"{subtopic_id}.json"
             content_blob_name = content_folder + content_filename
@@ -472,7 +472,7 @@ def content(request):
             return JsonResponse({'error': 'All fields are required!'}, status=400)
         subject_id = subtopic_id[:2]
         topic_id = subtopic_id[:-2]
-        subtopic_folder = f"LMSActualData/{subject_id}/{topic_id}/{subtopic_id}/"
+        subtopic_folder = f"subjects/{subject_id}/{topic_id}/{subtopic_id}/"
         content_folder = subtopic_folder + "content/"
         asset_folder = subtopic_folder + "content/asset/"
         content_filename = f"{subtopic_id}.json"

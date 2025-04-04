@@ -8,9 +8,7 @@ import ast
 from django.utils import timezone
 
 def get_ist_time():
-        today =timezone.now() + timedelta(hours=5, minutes=30)
-        print(today)
-        return  today
+        return  timezone.now() + timedelta(hours=5, minutes=30)
 
 @api_view(['POST'])
 def create_course(request):

@@ -14,6 +14,7 @@ from azure.storage.blob import ContentSettings
 import os
 from azure.storage.blob import BlobServiceClient
 import AdminFlow.course as course
+from AdminFlow.course import get_ist_time
 blob_service_client = BlobServiceClient(account_url=f"https://{AZURE_ACCOUNT_NAME}.blob.core.windows.net/",credential=AZURE_ACCOUNT_KEY)
 container_client = blob_service_client.get_container_client(AZURE_CONTAINER)
 
@@ -86,7 +87,7 @@ def save(request):
     subject_id = subtopic_id[:2]
     topic_id = subtopic_id[:-2]
 
-    subtopic_folder = f"LMSActualData/{subject_id}/{topic_id}/{subtopic_id}/"
+    subtopic_folder = f"subjects/{subject_id}/{topic_id}/{subtopic_id}/"
 
     level_char = level[0].lower()
 
@@ -127,7 +128,7 @@ def save(request):
 
             if current_file:
                 try:
-                    blob_name = f"{subtopic_folder}Coding/{current_file}"
+                    blob_name = f"{subtopic_folder}coding/{current_file}"
                     blob_client = container_client.get_blob_client(blob_name)
 
                     if not blob_client.exists():
@@ -172,6 +173,7 @@ def save(request):
                     qn_id = os.path.splitext(current_file)[0]
                     question = questions.objects.get(question_id=qn_id)
                     question.last_updated_by = last_updated_by
+                    question.last_updated_time=get_ist_time()
                     question.tags = ','.join(data.get('Tags', [])) if isinstance(data.get('Tags'), list) else data.get('Tags', '')
                     question.save()
 
@@ -212,7 +214,7 @@ def save(request):
                       
                 }
 
-                coding_folder = f"{subtopic_folder}Coding/"
+                coding_folder = f"{subtopic_folder}coding/"
                 file_pattern = f"q{subtopic_id}c{level_char}m"
                 next_coding_number = get_next_number(coding_folder, file_pattern)
 
@@ -245,6 +247,8 @@ def save(request):
                     sub_topic_id=subtopic,
                     question_type='coding',
                     level=level,
+                    creation_time= get_ist_time(),
+                    last_updated_time=get_ist_time(),
                     created_by=data.get('CreatedBy'),
                     last_updated_by=last_updated_by,
                     reviewed_by='',

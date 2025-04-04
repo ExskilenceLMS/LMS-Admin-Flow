@@ -66,9 +66,9 @@ MIDDLEWARE = [
 # blob
 DEFAULT_FILE_STORAGE = 'storages.backends.azure_storage.AzureStorage' 
 
-AZURE_ACCOUNT_NAME = 'storeholder'
-AZURE_ACCOUNT_KEY = 'QxlUJdp8eSoPeQPas4NigSkXg6KMep7z+fPQ5CpPm0kRfjg7Q0lFmVEIyhU4ohFLFdSqntDAG6MY84elTfecnw=='
-AZURE_CONTAINER = 'tpdata'
+AZURE_ACCOUNT_NAME = 'eustoreholder'
+AZURE_ACCOUNT_KEY = 'C2+T9kL7MgZbmODARQYK/HjWSxZy2o1+IqQifEhqPAxhs/ul4pPPisrWFN50yXSBWUHy5ShSPV1B+ASthIYLYw=='
+AZURE_CONTAINER = 'lmsdata'
 
 AZURE_CUSTOM_DOMAIN = f'{AZURE_ACCOUNT_NAME}.blob.core.windows.net'
 
@@ -142,7 +142,7 @@ DATABASES = {
         # 'HOST': 'Rudresh\\SQLEXPRESS',
         'PORT': '1433',
         'OPTIONS': {
-            'driver': 'ODBC Driver 18 for SQL Server',
+            'driver': 'ODBC Driver 17 for SQL Server',
             'trustServerCertificate': 'yes',  # Add this to avoid SSL errors
         },
     }
