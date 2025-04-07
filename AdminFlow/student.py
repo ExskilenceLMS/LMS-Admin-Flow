@@ -6,6 +6,7 @@ from django.http import HttpResponse, JsonResponse, HttpResponseNotFound
 import pytz
 from datetime import datetime, timedelta
 import time
+from LMS_Mongodb_App.models import *
 
 @api_view(['POST'])
 def get_all_students(request):
@@ -93,7 +94,17 @@ def delete_student(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
     
-
+def create_stud(req):
+    try:
+        data = req
+        student = students_details.objects.using('mongodb').create(
+            student_id = data.get('student_id'),
+        )
+        student.save()
+        return HttpResponse("Added Successfully")
+    except Exception as e:
+        print(e)
+        return HttpResponse("Failed")
 @api_view(['POST'])
 def create_student(request):
     if request.method == "POST":
@@ -147,6 +158,7 @@ def create_student(request):
                     student.branch = data.get("branch", student.branch)
 
                     student.save()
+                    
                     return JsonResponse({'message': 'Student updated successfully'}, status=200)
 
                 except students_info.DoesNotExist:
@@ -180,7 +192,7 @@ def create_student(request):
                     college=data.get("college", None),
                     branch=data.get("branch", None),
                 )
-
+                create_stud({"student_id":generated_student_id})
                 new_student.save()
                 return JsonResponse({'message': 'Student created successfully'}, status=201)
 
