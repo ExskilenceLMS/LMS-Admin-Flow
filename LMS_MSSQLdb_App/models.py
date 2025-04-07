@@ -115,21 +115,6 @@ class course_subjects(models.Model):
     class Meta:
         db_table = 'course_subjects'
 # 7
-class course_plan_details(models.Model):
-    course_id = models.ForeignKey(courses, on_delete=models.CASCADE)
-    subject_id = models.ForeignKey(subjects, on_delete=models.CASCADE)
-    day = models.IntegerField()
-    content_type = models.CharField(max_length=20)
-    week = models.IntegerField()
-    day_date = models.DateTimeField()
-    duration_in_hours = models.IntegerField()
-    del_row = models.BooleanField(default=False)
- 
-    def __str__(self):
-        return f"{self.course_id.course_name} - {self.subject_id.subject_name}"
-    class Meta:
-        db_table = 'course_plan_details'
-# 8
 class batches(models.Model):
     batch_id = models.CharField(max_length=20, primary_key=True)
     course_id = models.ForeignKey(courses, on_delete=models.CASCADE)
@@ -144,6 +129,23 @@ class batches(models.Model):
         return self.batch_name
     class Meta:
         db_table = 'batches'
+# 8
+class course_plan_details(models.Model):
+    course_id = models.ForeignKey(courses, on_delete=models.CASCADE)
+    subject_id = models.ForeignKey(subjects, on_delete=models.CASCADE)
+    day = models.IntegerField()
+    content_type = models.CharField(max_length=20)
+    week = models.IntegerField()
+    day_date = models.DateTimeField()
+    duration_in_hours = models.IntegerField()
+    batch_id = models.ForeignKey(batches,  on_delete=models.SET_NULL, null=True,default=None)
+    del_row = models.BooleanField(default=False)
+ 
+    def __str__(self):
+        return f"{self.course_id.course_name} - {self.subject_id.subject_name}"
+    class Meta:
+        db_table = 'course_plan_details'
+ 
 # 9
 class students_info(models.Model):
     student_id = models.CharField(max_length=20, primary_key=True)
@@ -298,7 +300,7 @@ class college_details(models.Model):
         db_table = 'college_details'
 # 18
 class branch_details(models.Model):
-    college_id = models.CharField(max_length=20)
+    college_id = models.ForeignKey(college_details, on_delete=models.SET_NULL, null=True)
     branch_id = models.CharField(max_length=20)
     branch = models.CharField(max_length=20)
     del_row = models.BooleanField(default=False)
@@ -319,6 +321,6 @@ class admins(models.Model):
     reg_date = models.DateTimeField()
     exp_date = models.DateTimeField(null=True, blank=True)
     del_row = models.BooleanField(default=False)
-
+ 
     class Meta:
-        db_table = 'admins'   
+        db_table = 'admins'

@@ -91,7 +91,7 @@ urlpatterns = [
     path("Content_creation/get_courses/",subject_plan_views.get_all_courses,name="get_all_courses"),
     path('Content_creation/get_all_data_of_course/',subject_plan_views.get_all_data_of_course,name='get_all_data_of_course'),
     path('Content_creation/save_daywise/',subject_plan_views.save_daywise,name='save_daywise'),
-
+    path('add_day_to_table/',subject_plan_views.add_day_to_table,name="add_day_to_table"),
 
 
     path('Content_creation/dashboard-data/',content_creation_views.dashboard_data,name='dashboard_data'),
@@ -107,6 +107,5 @@ urlpatterns = [
     path('Content_creation/get_specific_question/',content_creation_views.get_specific_question,name="get_specific_questions"),
     path('Content_creation/get_content_for_subtopic/',content_creation_views.get_content_for_subtopic,name="get_content_for_subtopic"),
     path('Content_creation/content/',content_creation_views.content,name="content"),
-
 ]
 

@@ -373,6 +373,7 @@ def save_daywise(request):
         blob_client = blob_service_client.get_blob_client(container=AZURE_CONTAINER, blob=blob_path)
         blob_client.upload_blob(json_data, overwrite=True)
         actual_course_id=courses.objects.get(course_id=course)
+        Returned_data=add_day_to_table(data)
         for key, value in daywise.items():
             for i, entry in enumerate(value):
                 start_date_str = entry['date']  
@@ -384,8 +385,7 @@ def save_daywise(request):
                 else:
                     end_date = start_date.replace(hour=23, minute=59, second=59)
                 subject = subjects.objects.filter(subject_name=key, del_row=False).first() 
-
-            if not (course_subjects.objects.filter(subject_id=subject,course_id=actual_course_id).exists()):
+            if not (course_subjects.objects.filter(subject_id=subject,course_id=actual_course_id,del_row=False).exists()):
                 course_subjects.objects.create(subject_id=subject,
                                                 course_id=actual_course_id,
                                                 start_date=start_date_value,
@@ -396,16 +396,15 @@ def save_daywise(request):
                                                 )
                 
             else:
-                exist_object=course_subjects.objects.filter(subject_id=subject,course_id=actual_course_id).first()
+                exist_object=course_subjects.objects.filter(subject_id=subject,course_id=actual_course_id,del_row=False).first()
                 exist_object.start_date=start_date_value
                 exist_object.end_date=end_date
                 exist_object.duration_in_days=(end_date-start_date_value).days
                 exist_object.save()
-            print((end_date-start_date_value).days)
         return JsonResponse({
                         "status": "success",
                         "message": "Daywise details saved successfully",
-                        "path": blob_path
+                        "path": blob_path,
                     })
     except json.JSONDecodeError:
         return JsonResponse({'message': 'Invalid JSON data'}, status=400)
@@ -414,5 +413,49 @@ def save_daywise(request):
             {'message': str(e), 'details': 'Error processing request'},
             status=500
         )
-    
 
+def add_day_to_table(data):
+    try: 
+        values = ['Preparation Day', 'Weekly Test', 'Onsite Workshop', 'Internals', 'Semester Exam', 'Festivals', 'Other']
+        daywise = data.get('schedule')
+        course_id = data.get('course_id')
+        batch_id = data.get('batch_id')
+        # Retrieve the first instance of the course and batch
+        course_instance = courses.objects.filter(course_id=course_id).first()
+        batch_instance = batches.objects.filter(batch_id=batch_id).first()
+        table_data = []
+        for key, value in daywise.items():
+            subject_instance = subjects.objects.filter(subject_name=key,del_row=False).first()
+            week = 1
+            val = ''
+            for i, entry in enumerate(value):
+                date = datetime.strptime(entry['date'], '%Y-%m-%d').replace(hour=0, minute=0, second=0)
+                if entry.get('dayOfWeek', "") == 'Mon' and val == 'value':
+                    week += 1
+                if val == '':
+                    val = "value"
+                day = entry.get('day', "").replace("Day ", '')
+                if entry.get('topic', "") in values:
+                    topic = entry.get('topic', "")
+                else:
+                    topic = 'study'
+                object = {
+                    "course_id": course_instance,
+                    "batch_id": batch_instance,
+                    "week": week,
+                    "day": day,
+                    "day_date": date,
+                    "duration_in_hours": entry.get('duration', 0),
+                    "subject_id": subject_instance,
+                    "content_type": topic,
+                    'del_row': False
+                }
+                table_data.append(object)
+        print(table_data)
+        course_plan_details.objects.bulk_create([course_plan_details(**data) for data in table_data])
+        return JsonResponse({'data': True})
+    except Exception as e:
+        return JsonResponse(
+            {'message': str(e), 'details': 'Error processing request'},
+            status=500
+        )
