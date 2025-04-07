@@ -163,7 +163,7 @@ def get_course_subjects(request):
             return JsonResponse({'message': 'course_id is required'}, status=400)
         if not subject_id:
             return JsonResponse({'message': 'subject_id is required'}, status=400)
-        blob_path = f"lms_subjectplans/{course_id}.json"
+        blob_path = f"lms_courses/{course_id}.json"
         blob_client = container_client.get_blob_client(blob_path)
         if not blob_client.exists():
             return JsonResponse({'topics':[]})
@@ -225,7 +225,7 @@ def save_subject_plans_details(request):
                     all_subjects = list(set(existing_subjects + new_subjects))
                     existing_entry.Existing_Subjects = ','.join(all_subjects)
                     subject_plan = existing_entry
-                blob_path = f"lms_subjectplans/{course_id}.json"
+                blob_path = f"lms_courses/{course_id}.json"
                 try:
                     blob_client = container_client.get_blob_client(blob_path)
                     try:
@@ -320,7 +320,7 @@ def get_all_data_of_course(request):
         if not course_id:
             return JsonResponse({'message': 'course_id is required'}, status=400)
 
-        blob_path = f"lms_subjectplans/{course_id}.json"
+        blob_path = f"lms_courses/{course_id}.json"
         blob_client = container_client.get_blob_client(blob_path)
 
         if not blob_client.exists():
