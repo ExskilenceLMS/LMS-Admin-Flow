@@ -75,7 +75,7 @@ class sub_topics(models.Model):
  
     def __str__(self):
         return self.sub_topic_name
-   
+ 
     class Meta:
         db_table = 'sub_topics'
  
@@ -152,7 +152,7 @@ class students_info(models.Model):
     course_id = models.ForeignKey(courses,  on_delete=models.SET_NULL, null=True)
     student_firstname = models.CharField(max_length=100)
     student_lastname = models.CharField(max_length=100)
-    student_email = models.EmailField()
+    student_email = models.EmailField(unique=True)
     student_country = models.CharField(max_length=100)
     student_state = models.CharField(max_length=100)
     student_city = models.CharField(max_length=100)
@@ -168,7 +168,7 @@ class students_info(models.Model):
     branch = models.CharField(max_length=50)
     address = models.CharField(max_length=100)
     phone = models.CharField(max_length=20)
-    student_score = models.CharField(max_length=20)
+    student_score = models.CharField(max_length=20, default=0)
     student_catogory = models.CharField(max_length=20, choices=[("SUN", "SUN"), ("MOON", "MOON"), ("STAR", "STAR")],default="STAR")
     student_college_rank = models.IntegerField(default=-1)
     student_overall_rank = models.IntegerField(default=-1)

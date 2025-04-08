@@ -420,9 +420,10 @@ def add_day_to_table(data):
         daywise = data.get('schedule')
         course_id = data.get('course_id')
         batch_id = data.get('batch_id')
-        # Retrieve the first instance of the course and batch
         course_instance = courses.objects.filter(course_id=course_id).first()
         batch_instance = batches.objects.filter(batch_id=batch_id).first()
+        existing_data = course_plan_details.objects.filter(course_id=course_instance, batch_id=batch_instance, del_row=False)
+        existing_data.update(del_row=True)
         table_data = []
         for key, value in daywise.items():
             subject_instance = subjects.objects.filter(subject_name=key,del_row=False).first()
