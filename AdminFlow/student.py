@@ -96,15 +96,29 @@ def delete_student(request):
     
 def create_stud(req):
     try:
+        if not isinstance(req, dict):
+            raise ValueError("Request data must be a dictionary")
         data = req
-        student = students_details.objects.using('mongodb').create(
-            student_id = data.get('student_id'),
-        )
-        student.save()
-        return HttpResponse("Added Successfully")
+        print("Received data:", data)
+        student_id = data.get('student_id')
+        if not student_id or not isinstance(student_id, str):
+            raise ValueError("Student ID must be a non-empty string")
+
+        print("Checking if student exists with ID:", student_id)
+        if students_details.objects.using('mongodb').filter(student_id=student_id).exists():
+            print('Student already exists')
+            return HttpResponse("Student already exists")
+        else:
+            print('Adding new student')
+            student = students_details(
+                student_id=student_id
+            )
+            student.save(using='mongodb')
+            return HttpResponse("Added Successfully")
     except Exception as e:
-        print(e)
+        print("Error:", e)
         return HttpResponse("Failed")
+
 @api_view(['POST'])
 def create_student(request):
     if request.method == "POST":
@@ -128,6 +142,7 @@ def create_student(request):
                 try:
                     student = students_info.objects.get(student_id=student_id)
                     try:
+                        
                         course_instance = courses.objects.get(course_id=data["course_id"])
                     except courses.DoesNotExist:
                         return JsonResponse({'error': 'Course not found'}, status=404)
@@ -158,6 +173,7 @@ def create_student(request):
                     student.branch = data.get("branch", student.branch)
 
                     student.save()
+                    create_stud({"student_id":data.get('student_id')})
                     
                     return JsonResponse({'message': 'Student updated successfully'}, status=200)
 
