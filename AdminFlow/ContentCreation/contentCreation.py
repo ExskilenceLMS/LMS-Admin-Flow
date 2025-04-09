@@ -583,15 +583,15 @@ def content(request):
             file_count += 1
         temp_videos = []
         for key, value in request.POST.items():
-            if key.startswith('videos[') and key.endswith('][url]'):
+            if key.startswith('videos[') and key.endswith('][path]'):
                 video_index = key.split('[')[1].split(']')[0]
-                url = value
+                path = value
                 text = request.POST.get(f'videos[{video_index}][text]')
                 time = request.POST.get(f'videos[{video_index}][time]')
                 level = request.POST.get(f'videos[{video_index}][level]')
-                if url and text and time and level:
+                if path and text and time and level:
                     temp_videos.append({
-                        'url': url,
+                        'path': path,
                         'text': text,
                         'time': time,
                         'level': level,

@@ -7,7 +7,7 @@ import pytz
 from datetime import datetime, timedelta
 import time
 from LMS_Mongodb_App.models import *
-
+from AdminFlow.collegeBranch import generate_id
 @api_view(['POST'])
 def get_all_students(request):
     try:
@@ -187,7 +187,7 @@ def create_student(request):
                 batch_instance = batches.objects.get(batch_id=data['batch_id'])
 
                 new_student = students_info(
-                    student_id=generated_student_id,
+                    student_id=generate_id(data['college'],data['branch'],data['student_type'][0]),
                     course_id=course_instance,
                     student_firstname=data.get("student_firstname", None),
                     student_lastname=data.get("student_lastname", None),
