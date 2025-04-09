@@ -545,7 +545,7 @@ def content(request):
                 asset_filename = f"{subtopic_id}{file_count:02}{file_extension}"
                 asset_blob_name = asset_folder + asset_filename
                 asset_blob_client = container_client.get_blob_client(asset_blob_name)
-                file_path = f"https://storeholder.blob.core.windows.net/tpdata/{asset_blob_name}"
+                file_path = f"https://storeholder.blob.core.windows.net/lmsdata/{asset_blob_name}"
 
                 asset_blob_client.upload_blob(file_obj, overwrite=True)
                 kept_assets.add(asset_blob_name)
@@ -561,7 +561,7 @@ def content(request):
                 old_filename = old_path.split('/')[-1]
                 new_filename = f"{subtopic_id}{file_count:02}{os.path.splitext(old_filename)[1]}"
                 new_blob_name = asset_folder + new_filename
-                new_path = f"https://storeholder.blob.core.windows.net/tpdata/{new_blob_name}"
+                new_path = f"https://storeholder.blob.core.windows.net/lmsdata/{new_blob_name}"
 
                 if old_filename != new_filename:
                     try:
