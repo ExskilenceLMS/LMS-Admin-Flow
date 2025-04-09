@@ -561,7 +561,7 @@ def content(request):
                 old_filename = old_path.split('/')[-1]
                 new_filename = f"{subtopic_id}{file_count:02}{os.path.splitext(old_filename)[1]}"
                 new_blob_name = asset_folder + new_filename
-                new_path = f"https://storeholder.blob.core.windows.net/lmsdata/{new_blob_name}"
+                new_path = f"https://storeholder.blob.core.windows.net/{AZURE_CONTAINER}/{new_blob_name}"
 
                 if old_filename != new_filename:
                     try:
