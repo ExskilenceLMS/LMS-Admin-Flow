@@ -166,13 +166,21 @@ def course_Plan(request):
             data = json.loads(request.body)
             subtopic_id = data.get('subtopic_id')
             level = data.get('level')
+            if level=='level1' :
+                level_char='e'
+            elif level=='level2':
+                level_char='m'
+            elif level=='level3':
+                level_char="h"
+            else:
+                level_char='e'
             content_type = data.get('type')
             current_file = data.get('currentFile')
             last_updated_by = data.get('Last_Updated_by')
             subject_id = subtopic_id[:2]
             topic_id = subtopic_id[:-2]
             subtopic_folder = f"subjects/{subject_id}/{topic_id}/{subtopic_id}/"
-            level_char = level[0].lower()
+            
             def get_next_number(folder_path, file_pattern):
                 existing_files = list(container_client.list_blobs(name_starts_with=folder_path))
                 existing_numbers = set()

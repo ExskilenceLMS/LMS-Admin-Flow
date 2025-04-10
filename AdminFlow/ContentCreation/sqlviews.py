@@ -89,7 +89,14 @@ def save(request):
 
     subtopic_folder = f"subjects/{subject_id}/{topic_id}/{subtopic_id}/"
 
-    level_char = level[0].lower()
+    if level=='level1' :
+        level_char='e'
+    elif level=='level2':
+        level_char='m'
+    elif level=='level3':
+        level_char="h"
+    else:
+        level_char='e'
 
     def get_next_number(folder_path, file_pattern):
         existing_files = list(container_client.list_blobs(name_starts_with=folder_path))
@@ -255,7 +262,8 @@ def save(request):
                     tags=','.join(data.get('Tags', [])) if isinstance(data.get('Tags'), list) else data.get('Tags', '')
                 )
                 question.save()
-
+                subtopic.coding = questions.objects.filter(sub_topic_id=subtopic, question_type='coding').count()
+                subtopic.save()
                 return JsonResponse({
                     'message': 'Question created successfully',
                     'blob_name': coding_blob_name
