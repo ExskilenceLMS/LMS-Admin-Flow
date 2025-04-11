@@ -320,6 +320,7 @@ class admins(models.Model):
     category = models.CharField(max_length=20)
     reg_date = models.DateTimeField()
     exp_date = models.DateTimeField(null=True, blank=True)
+    access = models.JSONField(default=list, blank=True)
     del_row = models.BooleanField(default=False)
  
     class Meta:

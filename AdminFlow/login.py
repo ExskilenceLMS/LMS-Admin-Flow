@@ -12,9 +12,11 @@ def login(request,mail):
         admin = admins.objects.get(admin_email=mail, del_row=False)
         if admin:
             exists=True
+            access=admin.access
         else:
             exists=False
-        return JsonResponse({'Type': admin.category,'exists':exists }, status=200)
+            access=[]
+        return JsonResponse({'Type': admin.category,'exists':exists,'access':access }, status=200)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
     
@@ -31,6 +33,7 @@ def add_admin(request):
                 admin.admin_email=data.get('admin_email', admin.admin_email)
                 admin.phone=data.get('phone', admin.phone)
                 admin.category=data.get('category', admin.category)
+                admin.access=data.get('access',admin.access)
                 admin.save()
             else:
                 existing_admins_count = admins.objects.count() + 1
@@ -43,6 +46,7 @@ def add_admin(request):
                     phone=data['phone'],
                     category=data['category'],
                     reg_date=get_ist_time(),
+                    access=data['access'],
                     exp_date=get_ist_time()+timedelta(days=365)
                 )
                 admin.save()  

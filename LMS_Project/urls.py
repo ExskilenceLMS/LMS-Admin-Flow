@@ -31,6 +31,8 @@ from AdminFlow import collegeBranch as college_branch_views
 
 from AdminFlow.ContentCreation import sqlviews as sql_views
 from AdminFlow.ContentCreation import contentCreation as content_creation_views
+
+from AdminFlow import batchstatus as batchstatus_views 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("",admin_views.home),
@@ -78,6 +80,11 @@ urlpatterns = [
     path('create_subTopic/',sub_topic_views.create_subTopic,name='create_subTopic'),
     path('get_all_subTopics/<str:topic_id>/',sub_topic_views.get_all_subTopics,name='get_all_subTopics'),
     path('delete_sub_topic/',sub_topic_views.delete_sub_topic,name='delete_sub_topic'),
+
+
+    path('get_subject_for_batch/<str:course>/<str:batch>/',batchstatus_views.get_subject_for_batch,name='get_subject_for_batch'),
+    path('get_batch_daywise/<str:course>/<str:batch>/<str:subject>',batchstatus_views.get_batch_daywise,name='get_batch_daywise'),
+
 
     path('add_college/',college_branch_views.add_college,name='add_college'),
     path('add_branch/',college_branch_views.add_branch,name='add_branch'),

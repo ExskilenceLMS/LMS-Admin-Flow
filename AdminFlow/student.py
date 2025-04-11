@@ -185,7 +185,7 @@ def create_student(request):
                 course_instance = courses.objects.get(course_id=data["course_id"])
                 generated_student_id = f'Stud{existing_count}'
                 batch_instance = batches.objects.get(batch_id=data['batch_id'])
-
+                
                 new_student = students_info(
                     student_id=generate_id(data['college'],data['branch'],data['student_type'][0]),
                     course_id=course_instance,
@@ -208,7 +208,8 @@ def create_student(request):
                     college=data.get("college", None),
                     branch=data.get("branch", None),
                 )
-                create_stud({"student_id":generated_student_id})
+                res=create_stud({"student_id":new_student.student_id})
+                print(res)
                 new_student.save()
                 return JsonResponse({'message': 'Student created successfully'}, status=201)
 
