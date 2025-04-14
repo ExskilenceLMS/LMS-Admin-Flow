@@ -171,7 +171,7 @@ def create_student(request):
                     student.student_type = data.get("student_type", student.student_type)
                     student.college = data.get("college", student.college)
                     student.branch = data.get("branch", student.branch)
-
+                    student.allocate=data.get("allocate", student.allocate)
                     student.save()
                     create_stud({"student_id":data.get('student_id')})
                     
@@ -207,6 +207,7 @@ def create_student(request):
                     student_type=data.get("student_type", None),
                     college=data.get("college", None),
                     branch=data.get("branch", None),
+                    allocate=data.get("allocate", None)
                 )
                 res=create_stud({"student_id":new_student.student_id})
                 print(res)
