@@ -125,9 +125,9 @@ def get_questions_data_by_subtopic(request):
                 questions.objects.filter(sub_topic_id=subtopic)
                 .values('question_type')
                 .annotate(
-                    level1_count=Count('question_id', filter=Q(level='Easy')),
-                    level2_count=Count('question_id', filter=Q(level='Medium')),
-                    level3_count=Count('question_id', filter=Q(level='Hard'))
+                    level1_count=Count('question_id', filter=Q(level='level1')),
+                    level2_count=Count('question_id', filter=Q(level='level2')),
+                    level3_count=Count('question_id', filter=Q(level='level3'))
                 )
             )
             result = {
