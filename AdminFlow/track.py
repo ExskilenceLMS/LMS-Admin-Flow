@@ -121,3 +121,17 @@ def delete_track(request):
         return JsonResponse({'message': 'Track deleted successfully'})
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+
+
+@api_view(['GET'])
+def track_name(request, track_name):
+    try:
+        exists = tracks.objects.filter(track_name=track_name).exists()
+        if exists:
+            return JsonResponse({"Exist": True})
+        else:
+            return JsonResponse({"Exist": False})
+    except Exception as e:
+        print(f"Error: {e}")
+        return JsonResponse({"Exist": False, "Error": str(e)})
+

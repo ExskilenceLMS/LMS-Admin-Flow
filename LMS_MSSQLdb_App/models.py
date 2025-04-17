@@ -104,6 +104,7 @@ class course_subjects(models.Model):
     course_id = models.ForeignKey(courses, on_delete=models.CASCADE)
     subject_id = models.ForeignKey(subjects, on_delete=models.CASCADE)
     duration_in_days = models.CharField(max_length=20)
+    time_in_minutes=models.FloatField(max_length=20,default=0,null=True)
     start_date = models.DateTimeField(default=None )
     end_date = models.DateTimeField(default=None)
     is_mandatory = models.BooleanField()

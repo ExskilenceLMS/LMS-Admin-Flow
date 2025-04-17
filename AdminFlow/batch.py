@@ -82,13 +82,15 @@ def get_all_batch(request, course_id):
 
         batch_data = []
         for batch in batches_list:
+            student_count = students_info.objects.filter(batch_id=batch, del_row=False).count()
             batch_data.append({
                 'batch_id': batch.batch_id,
                 'batch_name': batch.batch_name,
                 'delivery_type': batch.delivery_type,
                 'max_no_of_students': batch.max_no_of_students,
                 'start_date': batch.start_date.strftime('%Y-%m-%d'),  
-                'indicative_date': batch.indicative_date.strftime('%Y-%m-%d')  
+                'indicative_date': batch.indicative_date.strftime('%Y-%m-%d'),
+                'students_count': student_count 
             })
         return JsonResponse({'batches': batch_data}, status=200)
 

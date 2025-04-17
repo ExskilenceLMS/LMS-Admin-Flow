@@ -209,6 +209,7 @@ def save_subject_plans_details(request):
             data = json.loads(request.body)
             course_id = data.get('course_id')
             subject_id = data.get('subject_id')
+            time=data.get('time')
             if not courses.objects.filter(course_id=course_id).exists():
                 return JsonResponse({
                     "status": "error",

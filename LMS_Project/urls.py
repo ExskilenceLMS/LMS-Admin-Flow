@@ -63,7 +63,7 @@ urlpatterns = [
     path('allocate_student/',student_views.allocate_student,name="allocate_student"),
     path('import_students/',student_views.import_students,name="import_students"),
     path('get_students_of_batch/',student_views.get_students_of_batch,name="get_students_of_batch"),
-
+    path('check_mail_and_number/',student_views.check_mail_and_number,name='check_mail_and_number'),
     path('fetch_rules/',rules_views.fetch_rules,name="fetch_rules"),
     path('update_rules/',rules_views.update_rules,name="update_rules"),
     path('create_subject/',subjects_views.create_subject,name="create_subject"),
@@ -93,6 +93,8 @@ urlpatterns = [
     path('create_track/',track_views.create_track,name='create_track'),
     path('get_all_tracks/',track_views.get_all_tracks,name='get_all_tracks'),
     path('delete_track/',track_views.delete_track,name='delete_track'),
+    path('track_name/<str:track_name>/', track_views.track_name,name='track_name'),
+
     path('get_all_course_tracks_and_subjects/' , subject_plan_views.get_all_course_tracks_and_subjects,name="get_all_course_tracks_and_subjects"),
     path('topics_by_subject/<str:subject_id>/', subject_plan_views.topics_by_subject,name="topics_by_subject"),
     path('get_all_subtopics_data/<str:topic_id>',subject_plan_views.get_all_subtopics_data,name="get_all_subtopics_data"),

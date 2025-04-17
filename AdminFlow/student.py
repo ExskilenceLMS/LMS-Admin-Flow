@@ -69,9 +69,9 @@ def get_students_of_batch(request):
                     "student_dob": student.student_dob,
                     "student_address": student.address,
                     "student_pincode": student.student_pincode,
-                    "student_phone": student.phone,
+                    "phone": student.phone,
                     "student_altphone": student.student_alt_phone,
-                    "student_isActive": student.isActive,
+                    "isActive": student.isActive,
                     "student_qualification": student.student_qualification,
                     "student_type": student.student_type,
                     "college": student.college,
@@ -79,7 +79,7 @@ def get_students_of_batch(request):
                     "allocate": student.allocate
             }
                 students_list.append(student_data)
-            return JsonResponse({'students': students_list})
+            return JsonResponse({'students': students_list,'max':batch_instance.max_no_of_students})
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
 
@@ -124,7 +124,7 @@ def create_student(request):
     if request.method == "POST":
         try:
             data = json.loads(request.body)
-            required_fields = ['student_firstname', 'student_lastname', 'student_email', 'student_gender', 'student_phone', 'student_type']
+            required_fields = ['student_firstname', 'student_lastname', 'student_email', 'student_gender', 'phone', 'student_type']
             for field in required_fields:
                 if field not in data:
                     return JsonResponse({'error': f'Missing required field: {field}'}, status=400)
@@ -363,4 +363,41 @@ def import_students(request):
         "saved_student": saved_student,
         'error_student': error_student
     })
+
+@api_view(['POST'])
+def check_mail_and_number(request):
+    try:
+        data = json.loads(request.body)
+        student = students_info.objects.get(student_email=data['email'])
+        data={
+            "student_id":student.student_id,
+            "course_id" :student.course_id.course_id,
+            "student_firstname":student.student_firstname,
+            "student_lastname":student.student_lastname,
+            "student_email":student.student_email,
+            "student_country":student.student_country,
+            "student_state":student.student_state,
+            "student_city":student.student_city,
+            "student_gender": student.student_gender,
+            "student_pincode": student.student_pincode,
+            "student_alt_phone": student.student_alt_phone,
+            "isActive" :student.isActive,
+            "student_dob": student.student_dob,
+            "student_qualification": student.student_qualification,
+            "batch_id": student.batch_id.batch_id,
+            "address": student.address,
+            "phone": student.phone,
+            "student_type" : student.student_type,
+            "college": student.college,
+            "branch": student.branch,
+            "allocate" : student.allocate
+
+            
+
+        }
+        print(student) 
+        return JsonResponse({'data': data})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+    
 
