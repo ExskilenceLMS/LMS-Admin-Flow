@@ -56,12 +56,12 @@ def topics_subtopics_by_subject(request):
             except subjects.DoesNotExist:
                 return JsonResponse({'error': 'Subject not found'}, status=404)
 
-            topics_list = topics.objects.filter(subject_id=subject_instance)
+            topics_list = topics.objects.filter(subject_id=subject_instance,del_row=False)
 
             topics_with_subtopics = []
 
             for topic in topics_list:
-                subtopics = sub_topics.objects.filter(topic_id=topic)
+                subtopics = sub_topics.objects.filter(topic_id=topic,del_row=False)
 
                 topics_with_subtopics.append({
                     'topic_id': topic.topic_id,

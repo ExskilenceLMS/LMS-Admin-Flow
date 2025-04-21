@@ -55,7 +55,7 @@ def create_trainer(request):
 @api_view(['GET'])
 def get_all_trainer(request):
     try:
-        all_trainers = trainers.objects.filter(del_row=False)  
+        all_trainers = trainers.objects.filter()  
         trainers_list = []
         
         for trainer in all_trainers:
@@ -66,6 +66,7 @@ def get_all_trainer(request):
                 'gender': trainer.gender,
                 'mobile_no': trainer.phone,
                 'address':trainer.address,
+                'del_row': trainer.del_row
             }
             trainers_list.append(course_data)
         return JsonResponse({'trainers': trainers_list})

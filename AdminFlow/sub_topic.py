@@ -27,7 +27,7 @@ def get_all_subTopics(request,topic_id):
         try:
             sub_topics_list=[]
             topic_instance=topics.objects.get(topic_id=topic_id)
-            all_topics=sub_topics.objects.filter(del_row=False,topic_id=topic_instance)
+            all_topics=sub_topics.objects.filter(topic_id=topic_instance)
             for sub_topic in all_topics:
                 sub_topic_data={
                     'topic_id':sub_topic.topic_id.topic_id,
@@ -35,7 +35,8 @@ def get_all_subTopics(request,topic_id):
                     'sub_topic_id': sub_topic.sub_topic_id,
                     'sub_topic_name': sub_topic.sub_topic_name,
                     'sub_topic_description': sub_topic.sub_topic_description,
-                    'sub_topic_alt_name': sub_topic.sub_topic_alt_name 
+                    'sub_topic_alt_name': sub_topic.sub_topic_alt_name ,
+                    'del_row': sub_topic.del_row
                 }
                 sub_topics_list.append(sub_topic_data)
             return JsonResponse({'sub_topics': sub_topics_list})
