@@ -21,7 +21,30 @@ def test_creation(request):
 @api_view(['POST'])
 def get_tests_details(request):
     try:
-        tests = test_details.objects.all()
+        data = json.loads(request.body)
+        if all(data.get(field) == "" for field in ['track', 'subject', 'topic', 'level', 'tags', 'marks', 'duration', 'date']):
+            tests = test_details.objects.all()
+        else:
+            filters = {}
+
+            if data.get('track') != "":
+                filters.update({'track_id__track_name':data.get('track')})
+            if data.get('subject')!= "":
+                filters.update({'subject_id__subject_name':data.get('subject')})
+            if data.get('topic')!= "":
+                filters.update({'topic_id__in':data.get('topic')})
+            if data.get('level')!= "":
+                filters.update({'level':data.get('level')})
+            if data.get('tags')!= "":
+                filters.update({'tags__in':data.get('tags')})
+            if data.get('marks')!= "":
+                filters.update({'test_marks':data.get('marks')})
+            if data.get('duration')!= "":
+                filters.update({'test_duration':data.get('duration')})
+            if data.get('date')!= "":
+                filters.update({'test_date_and_time__date':data.get('date')})
+
+            tests = test_details.objects.filter(**filters)
         test_data = []
         for test in tests:
             test_data.append({
