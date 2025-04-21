@@ -51,6 +51,8 @@ INSTALLED_APPS = [
     'djongo',
     'LMS_Mongodb_App',
     'LMS_MSSQLdb_App',
+    'AdminFlow',
+    'TrainerFlow',
 ]
 
 MIDDLEWARE = [
