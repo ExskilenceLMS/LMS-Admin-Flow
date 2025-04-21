@@ -54,15 +54,18 @@ def create_subject(request):
 @api_view(['GET'])
 def get_all_subjects(request):
     try:
-        all_subjects= subjects.objects.filter(del_row=False)
+        all_subjects= subjects.objects.filter()
         subjects_list=[]
         for subject in all_subjects:
+            if(subject.track_id.del_row==True):
+                continue
             subject_data={
                 'subject_id': subject.subject_id,
                 'subject_name':subject.subject_name,
                 'track':subject.track_id.track_id,
                 'subject_alt_name':subject.subject_alt_name,
-                'subject_description':subject.subject_description
+                'subject_description':subject.subject_description,
+                'del_row':subject.del_row
             }
             subjects_list.append(subject_data)
         return JsonResponse({'subjects': subjects_list})
