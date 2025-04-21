@@ -69,12 +69,12 @@ class student_practiceMCQ_answers(models.Model):
 # 5
 class student_practice_coding_answers(models.Model):
     student_id                  = models.CharField(max_length=20)
-    question_id                 = models.CharField(max_length=20)
+    question_id                 = models.CharField(max_length=25)
     question_done_at            = models.CharField(max_length=20)
     entered_ans                 = models.TextField()
     subject_id                  = models.CharField(max_length=20)
     answered_time               = models.DateTimeField()
-    testcase_results            = models.JSONField()
+    testcase_results            = models.JSONField(default=dict)
     Attempts                    = models.IntegerField()
     score                       = models.FloatField(default=0)
     del_row                     = models.CharField(default='False',max_length=5)
@@ -175,7 +175,7 @@ class logs(models.Model):
 class trainers_details(models.Model):
     trainer_id                  = models.CharField(max_length=20, primary_key=True)
     batch_ids                   = models.JSONField(default=dict)
-    student_education_details   = models.JSONField(default=list)
+    trainer_education_details   = models.JSONField(default=list)
     del_row                     = models.CharField(default='False',max_length=5)
     class Meta:
         db_table = 'trainers_details'

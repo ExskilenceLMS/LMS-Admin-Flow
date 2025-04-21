@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path,include    
 from AdminFlow import course as course_views
 from AdminFlow import views as admin_views
 from AdminFlow import batch as batch_views
@@ -34,6 +34,7 @@ from AdminFlow.ContentCreation import contentCreation as content_creation_views
 
 from AdminFlow import batchstatus as batchstatus_views 
 urlpatterns = [
+    path('api/admin/', include('TrainerFlow.urls')),
     path('admin/', admin.site.urls),
     path("",admin_views.home),
 
