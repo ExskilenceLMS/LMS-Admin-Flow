@@ -29,15 +29,15 @@ ALLOWED_HOSTS = ['*']
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
-    "https://exskilence-suite.azurewebsites.net",
-    "https://euboard.azurewebsites.net/",
+    # "https://exskilence-suite.azurewebsites.net",
+    # "https://euboard.azurewebsites.net/",
 ]
 # Application definition
 MSSQL_SERVER_NAME = 'slnkshmtbsil.database.windows.net'
 MSSQL_DATABASE_NAME = 'exe_test'
 MSSQL_USERNAME = 'tpssa'
 MSSQL_PWD = 'TPSuser@sa123'
-MSSQL_DRIVER =  'ODBC Driver 18 for SQL Server'
+MSSQL_DRIVER =  'ODBC Driver 17 for SQL Server'
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -143,7 +143,7 @@ DATABASES = {
         # 'HOST': 'Rudresh\\SQLEXPRESS',
         'PORT': '1433',
         'OPTIONS': {
-            'driver': 'ODBC Driver 18 for SQL Server',
+            'driver': 'ODBC Driver 17 for SQL Server',
             'trustServerCertificate': 'yes',  # Add this to avoid SSL errors
         },
     }

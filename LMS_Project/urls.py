@@ -38,7 +38,7 @@ urlpatterns = [
     path("",admin_views.home),
 
     path('user/<str:mail>/',login_views.login,name="login"),
-    path('add_admin/',login_views.add_admin,name="add_admin"),
+    path('add_staff/',login_views.add_staff,name="add_staff"),
 
     path("create_course/",course_views.create_course,name="create_course"),
     path("get_all_courses/",course_views.get_all_courses,name="get_all_courses"),

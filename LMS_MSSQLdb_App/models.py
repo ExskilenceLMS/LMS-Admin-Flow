@@ -311,18 +311,19 @@ class branch_details(models.Model):
  
 # class ranks(models.Model):
 #19
-class admins(models.Model):
-    admin_id = models.CharField(max_length=20, primary_key=True)
-    admin_first_name = models.CharField(max_length=100)
-    admin_last_name = models.CharField(max_length=100)
-    admin_email = models.EmailField()
+class suite_login_details(models.Model):
+    user_id = models.CharField(max_length=20, primary_key=True)
+    user_first_name = models.CharField(max_length=100)
+    user_last_name = models.CharField(max_length=100)
+    user_email = models.EmailField()
     phone = models.CharField(max_length=20)
     activity_status = models.CharField(max_length=20)
-    category = models.CharField(max_length=20)
+    category = models.JSONField(default=list, blank=True)
     reg_date = models.DateTimeField()
     exp_date = models.DateTimeField(null=True, blank=True)
     access = models.JSONField(default=list, blank=True)
     del_row = models.BooleanField(default=False)
  
     class Meta:
-        db_table = 'admins'
+        db_table = 'suite_login_details'
+ 
