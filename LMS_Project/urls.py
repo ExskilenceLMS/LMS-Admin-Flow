@@ -34,7 +34,7 @@ from AdminFlow.ContentCreation import contentCreation as content_creation_views
 
 from AdminFlow import batchstatus as batchstatus_views 
 urlpatterns = [
-    path('api/admin/', include('TrainerFlow.urls')),
+    path('api/trainer/', include('TrainerFlow.urls')),
     path('admin/', admin.site.urls),
     path("",admin_views.home),
 
