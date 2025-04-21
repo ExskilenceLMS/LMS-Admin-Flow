@@ -367,37 +367,41 @@ def import_students(request):
 @api_view(['POST'])
 def check_mail_and_number(request):
     try:
-        data = json.loads(request.body)
-        student = students_info.objects.get(student_email=data['email'])
-        data={
-            "student_id":student.student_id,
-            "course_id" :student.course_id.course_id,
-            "student_firstname":student.student_firstname,
-            "student_lastname":student.student_lastname,
-            "student_email":student.student_email,
-            "student_country":student.student_country,
-            "student_state":student.student_state,
-            "student_city":student.student_city,
-            "student_gender": student.student_gender,
-            "student_pincode": student.student_pincode,
-            "student_alt_phone": student.student_alt_phone,
-            "isActive" :student.isActive,
-            "student_dob": student.student_dob,
-            "student_qualification": student.student_qualification,
-            "batch_id": student.batch_id.batch_id,
-            "address": student.address,
-            "phone": student.phone,
-            "student_type" : student.student_type,
-            "college": student.college,
-            "branch": student.branch,
-            "allocate" : student.allocate
+        request_data = json.loads(request.body)
+        email = request_data.get('email')
 
-            
+        try:
+            student = students_info.objects.get(student_email=email)
 
-        }
-        print(student) 
-        return JsonResponse({'data': data})
+            student_data = {
+                "student_id": student.student_id,
+                "course_id": student.course_id.course_id,
+                "student_firstname": student.student_firstname,
+                "student_lastname": student.student_lastname,
+                "student_email": student.student_email,
+                "student_country": student.student_country,
+                "student_state": student.student_state,
+                "student_city": student.student_city,
+                "student_gender": student.student_gender,
+                "student_pincode": student.student_pincode,
+                "student_alt_phone": student.student_alt_phone,
+                "isActive": student.isActive,
+                "student_dob": student.student_dob,
+                "student_qualification": student.student_qualification,
+                "batch_id": student.batch_id.batch_id,
+                "address": student.address,
+                "phone": student.phone,
+                "student_type": student.student_type,
+                "college": student.college,
+                "branch": student.branch,
+                "allocate": student.allocate,
+            }
+
+            return JsonResponse({'data': student_data})
+
+        except students_info.DoesNotExist:
+            return JsonResponse({'data': None})  # This will trigger the `else` on frontend
+
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
-    
 

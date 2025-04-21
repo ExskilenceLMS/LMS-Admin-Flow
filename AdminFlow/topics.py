@@ -30,7 +30,7 @@ def get_all_topics(request,subject_id):
     try:
         topics_list=[]
         subject_instance=subjects.objects.get(subject_id=subject_id)
-        all_topics=topics.objects.filter(del_row=False,subject_id=subject_instance)
+        all_topics=topics.objects.filter(subject_id=subject_instance)
         for topic in all_topics:
             topic_data={
                 'topic_id':topic.topic_id,
@@ -38,7 +38,8 @@ def get_all_topics(request,subject_id):
                 'topic_alt_name':topic.topic_alt_name,
                 'topic_description':topic.topic_description,
                 'subject_id':topic.subject_id.subject_id,
-                'subject_name':topic.subject_id.subject_name
+                'subject_name':topic.subject_id.subject_name,
+                'del_row':topic.del_row
             }
             topics_list.append(topic_data)
         return JsonResponse({'topics': topics_list})
