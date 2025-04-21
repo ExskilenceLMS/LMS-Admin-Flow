@@ -327,3 +327,4 @@ class suite_login_details(models.Model):
  
     class Meta:
         db_table = 'suite_login_details'
+ 

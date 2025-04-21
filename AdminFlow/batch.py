@@ -97,6 +97,36 @@ def get_all_batch(request, course_id):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
+
+@api_view(['GET'])
+def get_all_batches(request, course_id):
+    try:
+        try:
+            course_instance = courses.objects.get(course_id=course_id)
+        except courses.DoesNotExist:
+            return JsonResponse({'error': f'Course with ID {course_id} not found.'}, status=404)
+        batches_list = batches.objects.filter(course_id=course_instance)
+        if not batches_list:
+            return JsonResponse({'batches': []}, status=200)
+
+        batch_data = []
+        for batch in batches_list:
+            student_count = students_info.objects.filter(batch_id=batch, del_row=False).count()
+            batch_data.append({
+                'batch_id': batch.batch_id,
+                'batch_name': batch.batch_name,
+                'delivery_type': batch.delivery_type,
+                'max_no_of_students': batch.max_no_of_students,
+                'start_date': batch.start_date.strftime('%Y-%m-%d'),  
+                'indicative_date': batch.indicative_date.strftime('%Y-%m-%d'),
+                'students_count': student_count ,
+                "del_row": batch.del_row
+            })
+        return JsonResponse({'batches': batch_data}, status=200)
+
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
 @api_view(['POST'])
 def delete_batch(request):
     try:

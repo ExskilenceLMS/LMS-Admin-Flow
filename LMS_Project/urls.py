@@ -39,7 +39,7 @@ urlpatterns = [
     path("",admin_views.home),
 
     path('user/<str:mail>/',login_views.login,name="login"),
-    path('add_admin/',login_views.add_admin,name="add_admin"),
+    path('add_staff/',login_views.add_staff,name="add_staff"),
 
     path("create_course/",course_views.create_course,name="create_course"),
     path("get_all_courses/",course_views.get_all_courses,name="get_all_courses"),
@@ -51,6 +51,8 @@ urlpatterns = [
     path('create_batch/', batch_views.create_batch,name="create_batch"),
     path('delete_batch/', batch_views.delete_batch,name="delete_batch"),
     path('get_all_batch/<str:course_id>/', batch_views.get_all_batch,name="get_all_batch"),
+    path('get_all_batches/<str:course_id>/', batch_views.get_all_batches,name="get_all_batches"),
+
     path('create_trainer/',trainer_views.create_trainer,name="create_trainer"),
     path('get_all_trainer/',trainer_views.get_all_trainer,name="get_all_trainer"),
     path('delete_trainer/',trainer_views.delete_trainer,name="delete_trainer"),

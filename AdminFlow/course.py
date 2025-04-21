@@ -55,7 +55,7 @@ def create_course(request):
 @api_view(['GET'])
 def get_all_courses(request):
     try:
-        all_courses = courses.objects.filter(del_row=False)  
+        all_courses = courses.objects.filter()  
         courses_list = []
         
         for course in all_courses:
@@ -75,7 +75,8 @@ def get_all_courses(request):
                 'course_description': course.course_description,
                 'course_level': course.course_level,
                 'batch_count': batch_count,
-                "students_count": students_count
+                "students_count": students_count,
+                "del_row": course.del_row
             }
             courses_list.append(course_data)
 

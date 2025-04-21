@@ -34,31 +34,6 @@ def create_track(request):
 
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
-   
-# @api_view(['GET'])
-# def get_all_tracks(request):
-#     if request.method == "GET":
-#         try:
-#             tracks_data = tracks.objects.filter(del_row=False)
-#             data=[]
-            
-#             for track in tracks_data:
-#                 print(track.track_name)
-#                 track_name=track.track_name
-#                 all_courses = courses.objects.filter(tracks__icontains=str(track_name))
-#                 for course in all_courses:
-#                     d={
-#                         "course_id":course.course_id,
-#                         "course_name":course.course_name,
-#                         "track_id":track.track_id,
-#                         "track_name": track.track_name,
-#                         "track_name_searchable": track.track_name_searchable,
-#                         "track_description": track.track_description,
-#                         }
-#                     data.append(d)
-#             return JsonResponse({'tracks': data})
-#         except Exception as e:
-#             return JsonResponse({'error': str(e)}, status=500)
         
 from django.db.models import Q
 @api_view(['GET'])
