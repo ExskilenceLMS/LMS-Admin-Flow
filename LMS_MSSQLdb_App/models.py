@@ -229,7 +229,7 @@ class test_details(models.Model):
     subject_id = models.ForeignKey(subjects, on_delete=models.SET_NULL, null=True)
     topic_id = models.JSONField(default=list, blank=True)
     level = models.CharField(max_length=20)
-    tags = models.CharField(max_length=20)
+    tags = models.JSONField(default=list, blank=True)
     test_date_and_time = models.DateTimeField(default=None, null=True)
     del_row = models.BooleanField(default=False)
 
@@ -248,7 +248,7 @@ class questions(models.Model):
     last_updated_time = models.DateTimeField()
     last_updated_by = models.CharField(max_length=100,null=True, blank=True)
     reviewed_by = models.CharField(max_length=20, null=True, blank=True)
-    tags = models.CharField(max_length=20, null=True, blank=True)
+    tags = models.JSONField(default=list, blank=True)
     sub_topic_id = models.ForeignKey(sub_topics, on_delete=models.SET_NULL, null=True)
     del_row = models.BooleanField(default=False)
 
@@ -257,13 +257,15 @@ class questions(models.Model):
 # 14
 class test_sections(models.Model):
     test_id = models.ForeignKey(test_details, on_delete=models.CASCADE, db_column="Test_id")
+    section_number = models.IntegerField()
     section_name = models.CharField(max_length=20)
     topic_id = models.ForeignKey(topics, on_delete=models.SET_NULL, null=True)
     sub_topic_id = models.ForeignKey(sub_topics, on_delete=models.SET_NULL, null=True)
     question_id = models.ForeignKey(questions, on_delete=models.SET_NULL, null=True)
     del_row = models.BooleanField(default=False)
-
+      
     class Meta:
+        unique_together = ('test_id', 'question_id')
         db_table = 'test_sections'
 
 # 15 
