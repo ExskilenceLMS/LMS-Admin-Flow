@@ -159,7 +159,7 @@ class students_info(models.Model):
     student_gender = models.CharField(max_length=10)
     student_course_starttime = models.DateTimeField(null=True)
     student_pincode = models.CharField(max_length=20)
-    student_alt_phone=models.CharField(max_length=20)
+    student_alt_phone=models.CharField(max_length=20,blank=True,null=True)
     isActive=models.BooleanField(default=True)
     student_dob=models.DateField(default=None, null=True)
     student_qualification=models.CharField(max_length=100)
@@ -229,7 +229,7 @@ class test_details(models.Model):
     subject_id = models.ForeignKey(subjects, on_delete=models.SET_NULL, null=True)
     topic_id = models.JSONField(default=list, blank=True)
     level = models.CharField(max_length=20)
-    tags = models.CharField(max_length=20)
+    tags = models.JSONField(default=list, blank=True)
     test_date_and_time = models.DateTimeField(default=None, null=True)
     del_row = models.BooleanField(default=False)
 
@@ -248,7 +248,7 @@ class questions(models.Model):
     last_updated_time = models.DateTimeField()
     last_updated_by = models.CharField(max_length=100,null=True, blank=True)
     reviewed_by = models.CharField(max_length=20, null=True, blank=True)
-    tags = models.CharField(max_length=20, null=True, blank=True)
+    tags = models.JSONField(default=list, blank=True)
     sub_topic_id = models.ForeignKey(sub_topics, on_delete=models.SET_NULL, null=True)
     del_row = models.BooleanField(default=False)
 
