@@ -9,4 +9,5 @@ urlpatterns = [
     path('tests/get/',t_create.get_tests_details,name="tests"),
     path('tests/get/<str:test_id>/',t_create.get_test_details,name="tests"),
     path('tests/questions/',t_create.get_test_Questions,name="tests"),
+    path('tests/sections/',t_create.set_test_sections,name="tests"),
 ]

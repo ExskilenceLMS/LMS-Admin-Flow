@@ -18,7 +18,7 @@ def test_creation(request):
         return JsonResponse({"status": "success",
                              'test_id': test.test_id})
     except Exception as e:
-        print(e)
+         # print(e)
         return JsonResponse({"status": "error"})
 @api_view(['GET'])  
 def get_test_details(request,test_id):
@@ -30,7 +30,7 @@ def get_test_details(request,test_id):
                              'duration': test.test_duration,
                              'marks': test.test_marks,})
     except Exception as e:
-        print(e)
+         # print(e)
         return JsonResponse({"status": "error"})
 @api_view(['POST'])
 def get_test_Questions(request):
@@ -98,7 +98,38 @@ def get_test_Questions(request):
         container_client.close()
         return JsonResponse(Qn_data,safe=False)
     except Exception as e:
-        print(e)
+        # print(e)
+        return JsonResponse({"status": "error"})
+@api_view(['POST'])  
+def set_test_sections(request):
+    try:
+        data = json.loads(request.body)
+        try:
+            test = test_details.objects.get(test_id=data.get('test_id'),del_row=False)
+        except:
+            return JsonResponse({"status": "error",
+                                 "message": "Test not found"})
+        Qns_list = []
+        [Qns_list.extend(sec.get('qn_list',[])) for sec in data.get('sections')]
+        Qns = questions.objects.filter(question_id__in=Qns_list,del_row=False)
+        Qns_details_list = {qn.question_id:qn for qn in Qns}
+        test_section = []
+        for section in data.get('sections'):
+            qn_list = section.get('qn_list')
+            for qn in qn_list:
+                ts = test_sections(
+                    test_id=test,
+                    section_number=int(section.get('section_name','Section0').replace('Section','')),
+                    section_name=section.get('section_type'),
+                    topic_id = Qns_details_list.get(qn).sub_topic_id.topic_id,
+                    sub_topic_id = Qns_details_list.get(qn).sub_topic_id,
+                    question_id=Qns_details_list.get(qn),
+                )
+                test_section.append(ts)
+        test_section = test_sections.objects.bulk_create(test_section)
+        return JsonResponse({"status": "success"})
+    except Exception as e:
+        #  # print(e)
         return JsonResponse({"status": "error"})
 # def transfer_tags():
 #     try:
@@ -111,7 +142,7 @@ def get_test_Questions(request):
 #         return JsonResponse({"status": "success"})
              
 #     except Exception as e:
-#         print(e)
+#          # print(e)
 #         return JsonResponse({"status": "error"})    
 @api_view(['POST'])
 def get_tests_details(request):
