@@ -12,10 +12,10 @@ class students_assessments(models.Model):
     assessment_status           = models.CharField(max_length=20,choices=[('P','pending'),('S','started'),('C','completed')])
     assessment_score_secured    = models.FloatField()
     assessment_max_score        = models.FloatField()
-    assessment_week_number      = models.IntegerField()
-    assessment_completion_time  = models.DateTimeField()
-    assessment_rank             = models.IntegerField()
-    assessment_overall_rank     = models.IntegerField()
+    assessment_week_number      = models.IntegerField(default=None, null=True)
+    assessment_completion_time  = models.DateTimeField(default=None, null=True)
+    assessment_rank             = models.IntegerField(default=None, null=True)
+    assessment_overall_rank     = models.IntegerField(default=None, null=True)
     del_row                     = models.CharField(default='False',max_length=5)
 
     class Meta:

@@ -37,7 +37,10 @@ def get_test_Questions(request):
     try:
         data = json.loads(request.body)
         if all(data.get(field, "") == "" for field in ['track', 'subject', 'topic', 'level', 'tags']):#, 'marks', 'duration', 'date']):
-            Qns = questions.objects.filter(del_row=False)
+            Qns = questions.objects.filter(del_row=False).values('question_id',
+                'question_type', 
+                'level',
+                )
         else:
             filters = {}
 
