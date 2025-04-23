@@ -256,7 +256,17 @@ def import_students(request):
     current_student_count = students_info.objects.filter(batch_id=batch_instance, del_row=False).count()
     max_students = batch_instance.max_no_of_students
 
+    mandatory_fields = ["FirstName", "LastName", "Gender", "EmailId", "StudentType", "College", "Branch", "Mobile", "IsActive", "Allocate", "DOB"]
+
     for student in students_data:
+        print(f"Processing student: {student}")
+        missing_fields = [field for field in mandatory_fields if field not in student]
+        if missing_fields:
+            error_count += 1
+            error_student += f"{student.get('EmailId', 'Unknown')} (Missing fields: {', '.join(missing_fields)}), "
+            print(f"Error: Missing fields for student {student.get('EmailId', 'Unknown')}: {', '.join(missing_fields)}")
+            continue
+
         student_email = student["EmailId"]
         exist = students_info.objects.filter(student_email=student_email).first()
 
@@ -265,7 +275,8 @@ def import_students(request):
                 course_instance = courses.objects.get(course_id=course_id)
             except courses.DoesNotExist:
                 error_count += 1
-                error_student += f"{student_email}, "
+                error_student += f"{student_email} (Course does not exist), "
+                print(f"Error: Course does not exist for student {student_email}")
                 continue
 
             dob_str = student["DOB"]
@@ -279,13 +290,13 @@ def import_students(request):
                         dob = datetime.strptime(dob_str, '%d/%m/%y').strftime('%Y-%m-%d')
                 except ValueError:
                     error_count += 1
-                    error_student += f"{student_email}, "
+                    error_student += f"{student_email} (Invalid DOB format), "
+                    print(f"Error: Invalid DOB format for student {student_email}")
                     continue
 
             is_active = student["IsActive"].upper() == "TRUE"
             allocate_value = student["Allocate"].upper() == "TRUE"
-            print('drtyuikol;bguik',exist.student_id)
-            create_stud({"student_id":exist.student_id})
+            create_stud({"student_id": exist.student_id})
             exist.student_firstname = student["FirstName"]
             exist.student_lastname = student["LastName"]
             exist.course_id = course_instance
@@ -293,15 +304,15 @@ def import_students(request):
             exist.student_email = student_email
             exist.student_dob = dob
             exist.student_gender = student["Gender"]
-            exist.student_country = student["Country"]
-            exist.student_state = student["State"]
-            exist.student_city = student["City"]
-            exist.address = student["Address"]
-            exist.student_pincode = student["Pincode"]
+            exist.student_country = student.get("Country", "")
+            exist.student_state = student.get("State", "")
+            exist.student_city = student.get("City", "")
+            exist.address = student.get("Address", "")
+            exist.student_pincode = student.get("Pincode", "")
             exist.phone = student["Mobile"]
-            exist.student_alt_phone = student["AltMobile"]
+            exist.student_alt_phone = student.get("AltMobile", "")
             exist.isActive = is_active
-            exist.student_qualification = student["Qualification"]
+            exist.student_qualification = student.get("Qualification", "")
             exist.student_type = student["StudentType"]
             exist.college = student["College"]
             exist.branch = student["Branch"]
@@ -319,7 +330,7 @@ def import_students(request):
                 course_instance = courses.objects.get(course_id=course_id)
             except courses.DoesNotExist:
                 error_count += 1
-                error_student += f"{student_email}, "
+                error_student += f"{student_email} (Course does not exist), "
                 continue
 
             dob_str = student["DOB"]
@@ -330,7 +341,8 @@ def import_students(request):
                     dob = datetime.strptime(dob_str, '%d/%m/%y').strftime('%Y-%m-%d')
             except ValueError:
                 error_count += 1
-                error_student += f"{student_email}, "
+                error_student += f"{student_email} (Invalid DOB format), "
+                print(f"Error: Invalid DOB format for new student {student_email}")
                 continue
 
             is_active = student["IsActive"].upper() == "TRUE"
@@ -346,22 +358,22 @@ def import_students(request):
                 student_email=student_email,
                 student_dob=dob,
                 student_gender=student["Gender"],
-                student_country=student["Country"],
-                student_state=student["State"],
-                student_city=student["City"],
-                address=student["Address"],
-                student_pincode=student["Pincode"],
+                student_country=student.get("Country", ""),
+                student_state=student.get("State", ""),
+                student_city=student.get("City", ""),
+                address=student.get("Address", ""),
+                student_pincode=student.get("Pincode", ""),
                 phone=student["Mobile"],
-                student_alt_phone=student["AltMobile"],
+                student_alt_phone=student.get("AltMobile", ""),
                 isActive=is_active,
-                student_qualification=student["Qualification"],
+                student_qualification=student.get("Qualification", ""),
                 student_type=student["StudentType"],
                 college=student["College"],
                 branch=student["Branch"],
                 allocate=allocate_value
             )
             new_student.save()
-            res=create_stud({"student_id":new_student.student_id})
+            create_stud({"student_id": new_student.student_id})
             current_student_count += 1
             saved_count += 1
             saved_student += f"{student_email}, "
@@ -380,7 +392,6 @@ def import_students(request):
         response_data['max_students_reached'] = 'Maximum no of students was ' + str(max_students) + '. Hence these students were not added: ' + max_students_reached
 
     return JsonResponse(response_data)
-
 
 @api_view(['POST'])
 def check_mail_and_number(request):
