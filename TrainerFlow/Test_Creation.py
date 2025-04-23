@@ -36,35 +36,29 @@ def get_test_details(request,test_id):
 def get_test_Questions(request):
     try:
         data = json.loads(request.body)
-        if all(data.get(field, "") == "" for field in ['track', 'subject', 'topic', 'level', 'tags']):#, 'marks', 'duration', 'date']):
-            Qns = questions.objects.filter(del_row=False).values('question_id',
-                'question_type', 
-                'level',
-                )
-        else:
-            filters = {}
+        filters = {}
 
-            if data.get('track') != "":
-                filters.update({'sub_topic_id__topic_id__subject_id__track_id__track_name':data.get('track')})
-            if data.get('subject')!= "":
-                filters.update({'sub_topic_id__topic_id__subject_id__subject_name':data.get('subject')})
-            if data.get('topic')!= "":
-                filters.update({'sub_topic_id__topic_id':data.get('topic')})
-            if data.get('level')!= "":
-                filters.update({'level':data.get('level')})
-            if data.get('tags')!= "":
-                filters.update({'tags__in':data.get('tags')})
-            # if data.get('marks')!= "":
-            #     filters.update({'test_marks':data.get('marks')})
-            # if data.get('duration')!= "":
-            #     filters.update({'test_duration':data.get('duration')})
-            # if data.get('date')!= "":
-            #     filters.update({'test_date_and_time__date':data.get('date')})
+        if data.get('track') != "":
+            filters.update({'sub_topic_id__topic_id__subject_id__track_id__track_name':data.get('track')})
+        if data.get('subject')!= "":
+            filters.update({'sub_topic_id__topic_id__subject_id__subject_name':data.get('subject')})
+        if data.get('topic')!= "":
+            filters.update({'sub_topic_id__topic_id':data.get('topic')})
+        if data.get('level')!= "":
+            filters.update({'level':data.get('level')})
+        if data.get('tags')!= "":
+            filters.update({'tags__in':data.get('tags')})
+        # if data.get('marks')!= "":
+        #     filters.update({'test_marks':data.get('marks')})
+        # if data.get('duration')!= "":
+        #     filters.update({'test_duration':data.get('duration')})
+        # if data.get('date')!= "":
+        #     filters.update({'test_date_and_time__date':data.get('date')})
 
-            Qns = questions.objects.filter(**filters).values('question_id',
-                'question_type', 
-                'level',
-                )
+        Qns = questions.objects.filter(**filters,del_row=False).values('question_id',
+            'question_type', 
+            'level',
+            )
         sub_topic = sub_topics.objects.filter(del_row=False)
         subject_list = {sb.topic_id.subject_id.subject_id:sb.topic_id.subject_id.subject_name for sb in sub_topic }
         sub_topics_list =  {sb.sub_topic_id:sb.sub_topic_name for sb in sub_topic }#{sb.get('sub_topic_id'):sb.get('sub_topic_name') for sb in sub_topic }
@@ -128,11 +122,18 @@ def set_test_sections(request):
                     sub_topic_id = Qns_details_list.get(qn).sub_topic_id,
                     question_id=Qns_details_list.get(qn),
                 )
+                test.tags.extend(Qns_details_list.get(qn).tags)
+                test.topic_id.append(Qns_details_list.get(qn).sub_topic_id.sub_topic_name)
                 test_section.append(ts)
         test_section = test_sections.objects.bulk_create(test_section)
+        test.tags = list(set(test.tags))
+        test.save()
         return JsonResponse({"status": "success"})
     except Exception as e:
-        #  # print(e)
+        # print(e)
+        if str(e).__contains__("Cannot insert duplicate key row in object"):
+            return JsonResponse({"status": "error",
+                                 "message": "Cannot insert duplicate key row in object"})
         return JsonResponse({"status": "error"})
 # def transfer_tags():
 #     try:
@@ -147,48 +148,3 @@ def set_test_sections(request):
 #     except Exception as e:
 #          # print(e)
 #         return JsonResponse({"status": "error"})    
-@api_view(['POST'])
-def get_tests_details(request):
-    try:
-        data = json.loads(request.body)
-        if all(data.get(field) == "" for field in ['track', 'subject', 'topic', 'level', 'tags', 'marks', 'duration', 'date']):
-            tests = test_details.objects.all()
-        else:
-            filters = {}
-
-            if data.get('track') != "":
-                filters.update({'track_id__track_name':data.get('track')})
-            if data.get('subject')!= "":
-                filters.update({'subject_id__subject_name':data.get('subject')})
-            if data.get('topic')!= "":
-                filters.update({'topic_id__in':data.get('topic')})
-            if data.get('level')!= "":
-                filters.update({'level':data.get('level')})
-            if data.get('tags')!= "":
-                filters.update({'tags__in':data.get('tags')})
-            if data.get('marks')!= "":
-                filters.update({'test_marks':data.get('marks')})
-            if data.get('duration')!= "":
-                filters.update({'test_duration':data.get('duration')})
-            if data.get('date')!= "":
-                filters.update({'test_date_and_time__date':data.get('date')})
-
-            tests = test_details.objects.filter(**filters)
-        test_data = []
-        for test in tests:
-            test_data.append({
-                'test_id': test.test_id,
-                'title': test.test_name,
-                'description': test.test_description,
-                'duration': test.test_duration,
-                'marks': test.test_marks,
-                'subject': test.subject_id.subject_name if test.subject_id else None,
-                'date': test.test_date_and_time.date() if test.test_date_and_time else None,
-                'time': test.test_date_and_time.time()  if test.test_date_and_time else None,
-                'track': test.track_id.track_name if test.track_id else None,
-                'course': test.course_id.course_name if test.course_id else None,
-
-            })
-        return JsonResponse(test_data, safe=False)
-    except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)
