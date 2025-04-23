@@ -223,7 +223,7 @@ class test_details(models.Model):
     test_marks = models.IntegerField()
     test_type = models.CharField(max_length=20)
     test_description = models.CharField(max_length=250)
-    test_created_by = models.CharField(max_length=20)
+    test_created_by = models.EmailField(default=None, null=True)
     track_id =  models.ForeignKey(tracks, on_delete=models.SET_NULL, null=True)
     course_id = models.ForeignKey(courses, on_delete=models.SET_NULL, null=True)
     subject_id = models.ForeignKey(subjects, on_delete=models.SET_NULL, null=True)
@@ -263,7 +263,7 @@ class test_sections(models.Model):
     sub_topic_id = models.ForeignKey(sub_topics, on_delete=models.SET_NULL, null=True)
     question_id = models.ForeignKey(questions, on_delete=models.SET_NULL, null=True)
     del_row = models.BooleanField(default=False)
-      
+    
     class Meta:
         unique_together = ('test_id', 'question_id')
         db_table = 'test_sections'
