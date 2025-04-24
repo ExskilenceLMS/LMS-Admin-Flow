@@ -18,7 +18,7 @@ def test_creation(request):
         return JsonResponse({"status": "success",
                              'test_id': test.test_id})
     except Exception as e:
-         # print(e)
+        print(e)
         return JsonResponse({"status": "error"})
 @api_view(['GET'])  
 def get_test_details(request,test_id):

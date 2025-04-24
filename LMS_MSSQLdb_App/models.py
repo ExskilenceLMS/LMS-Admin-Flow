@@ -267,8 +267,25 @@ class test_sections(models.Model):
     class Meta:
         unique_together = ('test_id', 'question_id')
         db_table = 'test_sections'
+# 15
+class students_assessments(models.Model):
+    student_id                  = models.ForeignKey(students_info,  on_delete=models.SET_NULL, null=True)
+    course_id                   = models.ForeignKey(courses, on_delete=models.SET_NULL, null=True)
+    subject_id                  = models.ForeignKey(subjects, on_delete=models.SET_NULL, null=True)
+    assessment_type             = models.CharField(max_length=20)
+    test_id                     = models.ForeignKey(test_details, on_delete=models.CASCADE, db_column="Test_id")
+    assessment_status           = models.CharField(max_length=20,choices=[('P','pending'),('S','started'),('C','completed')])
+    assessment_score_secured    = models.FloatField()
+    assessment_max_score        = models.FloatField()
+    assessment_week_number      = models.IntegerField(default=None, null=True)
+    assessment_completion_time  = models.DateTimeField(default=None, null=True)
+    assessment_rank             = models.IntegerField(default=None, null=True)
+    assessment_overall_rank     = models.IntegerField(default=None, null=True)
+    del_row                     = models.CharField(default='False',max_length=5)
 
-# 15 
+    class Meta:
+        db_table = 'students_assessments'
+# 16 
 class student_activities(models.Model):
     student_id = models.ForeignKey(students_info,  on_delete=models.SET_NULL, null=True)
     subject_id = models.ForeignKey(subjects,  on_delete=models.SET_NULL, null=True)
@@ -282,7 +299,7 @@ class student_activities(models.Model):
     class Meta:
         db_table = 'student_activities'
 
-# 16 
+# 17 
 class student_app_usage(models.Model):
     student_id = models.CharField(max_length=20)
     logged_in = models.DateTimeField()
@@ -291,7 +308,7 @@ class student_app_usage(models.Model):
 
     class Meta:
         db_table = 'student_app_usage'
-# 17    
+# 18    
 class college_details(models.Model):
     college_id = models.CharField(max_length=20, primary_key=True)
     college_name = models.CharField(max_length=50)
@@ -302,7 +319,7 @@ class college_details(models.Model):
 
     class Meta:
         db_table = 'college_details'
-# 18
+# 19
 class branch_details(models.Model):
     college_id = models.ForeignKey(college_details, on_delete=models.SET_NULL, null=True)
     branch_id = models.CharField(max_length=20)
@@ -313,7 +330,7 @@ class branch_details(models.Model):
         db_table = 'branch_details'
 
 # class ranks(models.Model):
-#19
+#20
 class suite_login_details(models.Model):
     user_id = models.CharField(max_length=20, primary_key=True)
     user_first_name = models.CharField(max_length=100)

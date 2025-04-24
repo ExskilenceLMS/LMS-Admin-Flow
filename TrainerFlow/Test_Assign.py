@@ -3,8 +3,7 @@ import json
 from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from LMS_MSSQLdb_App.models import tracks as track_model,subjects as subject_model,topics as topic_model,suite_login_details,test_details,courses as course_model,batches as batch_model
-from LMS_MSSQLdb_App.models import students_info as student_model
-from LMS_Mongodb_App.models import students_assessments 
+from LMS_MSSQLdb_App.models import students_info as student_model, students_assessments 
 @api_view(['GET'])
 def filter_for_assign_tests(request):
     try:
@@ -46,10 +45,12 @@ def get_tests_details(request):
         if data.get('date')!= "":
             filters.update({'test_date_and_time__date':data.get('date')})
 
-        tests = test_details.objects.filter(**filters,test_date_and_time__gte=datetime.now(),del_row=False)
+        tests = test_details.objects.filter(**filters,del_row=False)
         test_data = []
         for test in tests:
-            test_data.append({
+            date_value = test.test_date_and_time if test.test_date_and_time else datetime.now()
+            if date_value <= datetime.now()  :
+                test_data.append({
                 'test_id': test.test_id,
                 'title': test.test_name,
                 'description': test.test_description,
@@ -62,9 +63,10 @@ def get_tests_details(request):
                 'course': test.course_id.course_name if test.course_id else None,
                 'test_type': test.test_type if test.test_type else None
 
-            })
+                })
         return JsonResponse(test_data, safe=False)
     except Exception as e:
+        print(e)
         return JsonResponse({"error": str(e)}, status=500)
 @api_view(['POST'])
 def update_test_details(request):
@@ -102,7 +104,7 @@ def get_students(request,course,batch,testID):
     try:
         students = list(student_model.objects.filter(batch_id__batch_name=batch,course_id__course_name=course,del_row=False).values(
                                         'student_id','student_firstname','student_lastname','student_type','college','branch'))
-        assigned_students = list(students_assessments.objects.using('mongodb').filter(test_id=testID,del_row=False).values('student_id'))
+        assigned_students = list(students_assessments.objects.filter(test_id=testID,del_row=False).values('student_id'))
         response ={
             'students':students,
             'assigned_students_ids':[i.get('student_id') for i in assigned_students]
@@ -117,7 +119,9 @@ def assign_tests(request):
         data = json.loads(request.body)
         test = test_details.objects.get(test_id = data.get('test_id'),del_row = False)
         assigned_students = data.get('assigned_students_ids',[])
-        old_Std = students_assessments.objects.using('mongodb').filter(test_id=test.test_id) 
+        old_Std = students_assessments.objects.filter(test_id=test.test_id) 
+        all_stds =student_model.objects.filter(del_row=False)
+        all_stds = {std.student_id:std for std in all_stds}
         del_std =[]
         update_oldStudents =[]
         std_obj =[]
@@ -125,28 +129,32 @@ def assign_tests(request):
             if std in assigned_students:
                 assigned_students.remove(std)
                 continue
-            if std in [i.student_id for i in old_Std]:
+            if std in [i.student_id.student_id for i in old_Std]:
                  for i in old_Std:
-                    if i.student_id == std:
+                    if i.student_id.student_id == std:
                         i.del_row = False
                         del_std.append(i)
                  continue
             student_test = students_assessments(
-                student_id = std,
+                student_id = all_stds.get(std),
                 assessment_type = test.test_type,
-                subject_id = test.subject_id.subject_id,
-                test_id = test.test_id,
+                subject_id = test.subject_id,
+                test_id = test,
                 course_id = test.course_id,
                 assessment_status ='P',
                 assessment_score_secured = 0,
                 assessment_max_score = test.test_marks
             )
             std_obj.append(student_test)
+        if data.get('students_list',[]) == []:
+            for std in old_Std:
+                std.del_row = True
+                del_std.append(std)
         if len(std_obj) != 0:
-            assigned = students_assessments.objects.using('mongodb').bulk_create(std_obj)
+            assigned = students_assessments.objects.bulk_create(std_obj)
         if len(assigned_students) != 0:
             for std in old_Std:
-                if std.student_id in assigned_students:
+                if std.student_id.student_id in assigned_students:
                     std.del_row = True
                 del_std.append(std)
         if len(del_std) != 0:

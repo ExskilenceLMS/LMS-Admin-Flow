@@ -3,23 +3,23 @@ from djongo import models
 # Create your models here.
 
 # 1
-class students_assessments(models.Model):
-    student_id                  = models.CharField(max_length=20)
-    assessment_type             = models.CharField(max_length=20)
-    subject_id                  = models.CharField(max_length=20)
-    test_id                     = models.CharField(max_length=20)
-    course_id                   = models.CharField(max_length=20)
-    assessment_status           = models.CharField(max_length=20,choices=[('P','pending'),('S','started'),('C','completed')])
-    assessment_score_secured    = models.FloatField()
-    assessment_max_score        = models.FloatField()
-    assessment_week_number      = models.IntegerField(default=None, null=True)
-    assessment_completion_time  = models.DateTimeField(default=None, null=True)
-    assessment_rank             = models.IntegerField(default=None, null=True)
-    assessment_overall_rank     = models.IntegerField(default=None, null=True)
-    del_row                     = models.CharField(default='False',max_length=5)
+# class students_assessments(models.Model):
+#     student_id                  = models.CharField(max_length=20)
+#     assessment_type             = models.CharField(max_length=20)
+#     subject_id                  = models.CharField(max_length=20)
+#     test_id                     = models.CharField(max_length=20)
+#     course_id                   = models.CharField(max_length=20)
+#     assessment_status           = models.CharField(max_length=20,choices=[('P','pending'),('S','started'),('C','completed')])
+#     assessment_score_secured    = models.FloatField()
+#     assessment_max_score        = models.FloatField()
+#     assessment_week_number      = models.IntegerField(default=None, null=True)
+#     assessment_completion_time  = models.DateTimeField(default=None, null=True)
+#     assessment_rank             = models.IntegerField(default=None, null=True)
+#     assessment_overall_rank     = models.IntegerField(default=None, null=True)
+#     del_row                     = models.CharField(default='False',max_length=5)
 
-    class Meta:
-        db_table = 'students_assessments'
+#     class Meta:
+#         db_table = 'students_assessments'
 # 2
 class practice_questions(models.Model):
     student_id                  = models.CharField(max_length=20)
