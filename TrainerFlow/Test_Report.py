@@ -45,14 +45,17 @@ def filter_for_Test_Report(request):
             'batches':[
                 batch.batch_name for batch in batchs
             ],
-            'LiveorCompleted':LiveorCompleted,
-            'Colleges':{
-                college.center_name:[
+            'liveorCompleted':LiveorCompleted,
+            'colleges':[
+                college.college_name for college in Colleges
+            ],
+            'branches':{
+                college.college_name:[
                         branch.branch for branch in branchs if branch.college_id.college_name == college.college_name
                                      ] for college in Colleges
             },
             'student_type':student_type,
-            'Test_type':Test_type
+            'test_type':Test_type
             
         }, status=200)
 
@@ -62,33 +65,45 @@ def filter_for_Test_Report(request):
 def get_tests_Report_details(request):
     try:
         data = json.loads(request.body)
-        filters = {}
+        test_details_filters = {}
+        students_assessments_filters = {}
 
-        if data.get('track') != "":
-            filters.update({'track_id__track_name':data.get('track')})
-        if data.get('course') != "":
-            filters.update({'course_id__course_name':data.get('course')})
-        if data.get('subject')!= "":
-            filters.update({'subject_id__subject_name':data.get('subject')})
-        if data.get('topic')!= "":
-            filters.update({'topic_id__in':data.get('topic')})
-        if data.get('level')!= "":
-            filters.update({'level':data.get('level')})
-        if data.get('tags')!= "":
-            filters.update({'tags__in':data.get('tags')})
-        if data.get('marks')!= "":
-            filters.update({'test_marks':data.get('marks')})
-        if data.get('duration')!= "":
-            filters.update({'test_duration':data.get('duration')})
-        if data.get('date')!= "":
-            filters.update({'test_date_and_time__date':data.get('date')})
+        if data.get('track','') != "":
+            test_details_filters.update({'track_id__track_name':data.get('track')})
+        if data.get('course','') != "":
+            test_details_filters.update({'course_id__course_name':data.get('course')})
+        if data.get('subject','')!= "":
+            test_details_filters.update({'subject_id__subject_name':data.get('subject')})
+        if data.get('topic','')!= "":
+            test_details_filters.update({'topic_id__in':data.get('topic')})
+        if data.get('Test_type','')!= "":
+            test_details_filters.update({'test_type':data.get('test_type')})
+        if data.get('tags','')!= "":
+            test_details_filters.update({'tags__in':data.get('tags')})
+        if data.get('date','')!= "":
+            test_details_filters.update({'test_date_and_time__date':data.get('date')})
 
-        tests = test_details.objects.filter(**filters,test_date_and_time__lte=datetime.now().__add__(timedelta(hours=5,minutes=30)),del_row=False)
+        if data.get('batch','') != "":
+            students_assessments_filters.update({'student_id__batch_id__batch_name':data.get('batch')})
+        if data.get('student_type','') != "":
+            students_assessments_filters.update({'student_id__student_type':data.get('student_type')})
+        if data.get('college','') != "":
+            students_assessments_filters.update({'student_id__college':data.get('college')})
+        if data.get('branch','') != "":
+            students_assessments_filters.update({'student_id__branch':data.get('branch')})
+
+        tests = test_details.objects.filter(**test_details_filters,test_date_and_time__lte=datetime.now().__add__(timedelta(hours=5,minutes=30)),del_row=False)
         test_ids = [test.test_id for test in tests]
-        Invited = students_assessments.objects.filter(test_id__in=test_ids,del_row=False)
+        Invited = students_assessments.objects.filter( **students_assessments_filters,test_id__in=test_ids,del_row=False)
         test_counts ={}
-        [test_counts.update({test.test_id.test_id :test_counts.get(test.test_id.test_id,0)+1}) for test in Invited ]
-
+        Students_objs = {}
+        # [test_counts.update({student.test_id.test_id :test_counts.get(student.test_id.test_id,0)+1}) for student in Invited ]
+        # [Students_objs.update({student.student_id.student_id :if Students_objs.get(student.student_id.student_id,[]).append(student)}) for student in Invited ]
+        for student in Invited:
+            if test_counts.get(student.test_id.test_id) is None:
+                test_counts.update({student.test_id.test_id:[]})
+            test_counts.get(student.test_id.test_id).append(student.student_id.student_id)
+            Students_objs.update({student.student_id.student_id:student})
         test_data = []
         for test in tests:
             test_data.append({
@@ -105,8 +120,29 @@ def get_tests_Report_details(request):
                 'course': test.course_id.course_name if test.course_id else None,
                 'test_type': test.test_type if test.test_type else None,
                 'invited':test_counts.get(test.test_id,0),
+                'test_end_time':test.test_date_and_time.__add__(timedelta(minutes=int(test.test_duration)))
 
             })
+            if datetime.strptime(str(test.test_date_and_time).split('+')[0].split('.')[0], "%Y-%m-%d %H:%M:%S") < datetime.now().__add__(timedelta(hours=5,minutes=30)):
+                
+                report =[]
+                [report.append({
+                    "student_id": Students_objs.get(student).student_id.student_id,
+                    "student_name":Students_objs.get(student).student_id.student_firstname + Students_objs.get(student).student_id.student_lastname,
+                    "college": Students_objs.get(student).student_id.college,
+                    "branch":'branch',
+                    "student_type":"student_type",
+                    "test_status": Students_objs.get(student).assessment_status,
+                    "datetime":(str(test.test_date_and_time)+' to '
+                               +str(test.test_date_and_time)
+                               ) if Students_objs.get(student).assessment_status != 'C' else (
+                                   str(test.test_date_and_time)+' to '
+                                        +str(test.test_date_and_time.__add__(timedelta(minutes=int(test.test_duration)))))
+
+                }) for student in test_counts.get(test.test_id)]
+                test_data[-1].update({'status': 'Completed','report':report})
+            else:
+                test_data[-1].update({'status': 'Live'})
         return JsonResponse(test_data, safe=False)
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)

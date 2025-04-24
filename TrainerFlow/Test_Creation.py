@@ -38,15 +38,15 @@ def get_test_Questions(request):
         data = json.loads(request.body)
         filters = {}
 
-        if data.get('track') != "":
+        if data.get('track','') != "":
             filters.update({'sub_topic_id__topic_id__subject_id__track_id__track_name':data.get('track')})
-        if data.get('subject')!= "":
+        if data.get('subject','')!= "":
             filters.update({'sub_topic_id__topic_id__subject_id__subject_name':data.get('subject')})
-        if data.get('topic')!= "":
+        if data.get('topic','')!= "":
             filters.update({'sub_topic_id__topic_id':data.get('topic')})
-        if data.get('level')!= "":
+        if data.get('level','')!= "":
             filters.update({'level':data.get('level')})
-        if data.get('tags')!= "":
+        if data.get('tags','')!= "":
             filters.update({'tags__in':data.get('tags')})
         # if data.get('marks')!= "":
         #     filters.update({'test_marks':data.get('marks')})
@@ -111,8 +111,8 @@ def set_test_sections(request):
         Qns = questions.objects.filter(question_id__in=Qns_list,del_row=False)
         Qns_details_list = {qn.question_id:qn for qn in Qns}
         test_section = []
-        for section in data.get('sections'):
-            qn_list = section.get('qn_list')
+        for section in data.get('sections',[]):
+            qn_list = section.get('qn_list',[])
             for qn in qn_list:
                 ts = test_sections(
                     test_id=test,

@@ -32,21 +32,21 @@ def get_tests_details(request):
         data = json.loads(request.body)
         filters = {}
 
-        if data.get('track') != "":
+        if data.get('track','') != "":
             filters.update({'track_id__track_name':data.get('track')})
         if data.get('subject')!= "":
             filters.update({'subject_id__subject_name':data.get('subject')})
-        if data.get('topic')!= "":
+        if data.get('topic','')!= "":
             filters.update({'topic_id__in':data.get('topic')})
-        if data.get('level')!= "":
+        if data.get('level','')!= "":
             filters.update({'level':data.get('level')})
-        if data.get('tags')!= "":
+        if data.get('tags','')!= "":
             filters.update({'tags__in':data.get('tags')})
-        if data.get('marks')!= "":
+        if data.get('marks','')!= "":
             filters.update({'test_marks':data.get('marks')})
-        if data.get('duration')!= "":
+        if data.get('duration','')!= "":
             filters.update({'test_duration':data.get('duration')})
-        if data.get('date')!= "":
+        if data.get('date','')!= "":
             filters.update({'test_date_and_time__date':data.get('date')})
 
         tests = test_details.objects.filter(**filters,del_row=False)
