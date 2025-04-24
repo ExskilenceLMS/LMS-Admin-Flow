@@ -48,8 +48,8 @@ def get_tests_details(request):
         tests = test_details.objects.filter(**filters,del_row=False)
         test_data = []
         for test in tests:
-            date_value = test.test_date_and_time if test.test_date_and_time else datetime.now()
-            if datetime.strptime(str(date_value).split('+')[0].split('.')[0], "%Y-%m-%d %H:%M:%S") <= datetime.now()  :
+            date_value = test.test_date_and_time if test.test_date_and_time else datetime.now().__add__(timedelta(minutes=1))
+            if datetime.strptime(str(date_value).split('+')[0].split('.')[0], "%Y-%m-%d %H:%M:%S") >= datetime.now()  :
                 test_data.append({
                 'test_id': test.test_id,
                 'title': test.test_name,
