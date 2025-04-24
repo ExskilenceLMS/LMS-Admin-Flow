@@ -49,8 +49,7 @@ def get_tests_details(request):
         test_data = []
         for test in tests:
             date_value = test.test_date_and_time if test.test_date_and_time else datetime.now()
-            date_value = date_value.replace(tzinfo=None)
-            if date_value <= datetime.now()  :
+            if datetime.strptime(str(date_value).split('+')[0].split('.')[0], "%Y-%m-%d %H:%M:%S") <= datetime.now()  :
                 test_data.append({
                 'test_id': test.test_id,
                 'title': test.test_name,

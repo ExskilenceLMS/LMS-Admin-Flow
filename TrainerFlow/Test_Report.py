@@ -20,13 +20,40 @@ def filter_for_Test_Report(request):
         student_type = ['Swapnodaya','Exskilence']
         Test_type = list(test_details.objects.filter(del_row=False).values_list('test_type',flat=True).distinct())
         return JsonResponse({
-            'courses': {
-               track.track_name:{
-                        course.course_name:[
-                            subject.subject_name for subject in subjects if subject.track_id.track_name == track.track_name
-                                           ] for course in courses if course.tracks.split(",").count(track.track_name)>0
-                                } for track in tracks
+            'tracks':  [ track.track_name for track in tracks],  
+            'courses':{
+                track.track_name:[
+                    course.course_name for course in courses if course.tracks.split(",").count(track.track_name)>0
+                                  ] for track in tracks
             },
+            'subjects': {
+                track.track_name:{
+                    course.course_name:[
+                        subject.subject_name for subject in subjects if subject.track_id.track_name == track.track_name
+                                        ] for course in courses if course.tracks.split(",").count(track.track_name)>0
+                                 } for track in tracks
+             },
+            'topics': {
+               track.track_name:{
+                        course.course_name:{
+                            subject.subject_name:[
+                                  topic.topic_name for topic in topics if topic.subject_id.subject_name == subject.subject_name
+                                                 ] for subject in subjects if subject.track_id.track_name == track.track_name
+                                            }      for course in courses if course.tracks.split(",").count(track.track_name)>0
+                                } for track in tracks
+                        },
+            'batches':[
+                batch.batch_name for batch in batchs
+            ],
+            'LiveorCompleted':LiveorCompleted,
+            'Colleges':{
+                college.center_name:[
+                        branch.branch for branch in branchs if branch.college_id.college_name == college.college_name
+                                     ] for college in Colleges
+            },
+            'student_type':student_type,
+            'Test_type':Test_type
+            
         }, status=200)
 
     except Exception as e:
