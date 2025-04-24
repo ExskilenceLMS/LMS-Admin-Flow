@@ -86,6 +86,8 @@ def branch_and_college(request):
         return JsonResponse({'error': str(e)}, status=500)
 
 def generate_id(college_key, branch_key, category):
+    print('functiono call')
+    print(college_key,branch_key,category)
     try:
         id_ = str(datetime.now().year)[-2:] + category + college_key + branch_key
         ids = students_info.objects.filter(student_id__startswith=id_).order_by('-student_id').values_list('student_id', flat=True).first()

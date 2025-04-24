@@ -1,25 +1,25 @@
 from djongo import models
 # from LMS_MSSQLdb_App.models import Students, Subjects, Courses,Questions
 # Create your models here.
-
+ 
 # 1
-class students_assessments(models.Model):
-    student_id                  = models.CharField(max_length=20)
-    assessment_type             = models.CharField(max_length=20)
-    subject_id                  = models.CharField(max_length=20)
-    test_id                     = models.CharField(max_length=20)
-    course_id                   = models.CharField(max_length=20)
-    assessment_status           = models.CharField(max_length=20,choices=[('P','pending'),('S','started'),('C','completed')])
-    assessment_score_secured    = models.FloatField()
-    assessment_max_score        = models.FloatField()
-    assessment_week_number      = models.IntegerField()
-    assessment_completion_time  = models.DateTimeField()
-    assessment_rank             = models.IntegerField()
-    assessment_overall_rank     = models.IntegerField()
-    del_row                     = models.CharField(default='False',max_length=5)
-
-    class Meta:
-        db_table = 'students_assessments'
+# class students_assessments(models.Model):
+#     student_id                  = models.CharField(max_length=20)
+#     assessment_type             = models.CharField(max_length=20)
+#     subject_id                  = models.CharField(max_length=20)
+#     test_id                     = models.CharField(max_length=20)
+#     course_id                   = models.CharField(max_length=20)
+#     assessment_status           = models.CharField(max_length=20,choices=[('P','pending'),('S','started'),('C','completed')])
+#     assessment_score_secured    = models.FloatField()
+#     assessment_max_score        = models.FloatField()
+#     assessment_week_number      = models.IntegerField(default=None, null=True)
+#     assessment_completion_time  = models.DateTimeField(default=None, null=True)
+#     assessment_rank             = models.IntegerField(default=None, null=True)
+#     assessment_overall_rank     = models.IntegerField(default=None, null=True)
+#     del_row                     = models.CharField(default='False',max_length=5)
+ 
+#     class Meta:
+#         db_table = 'students_assessments'
 # 2
 class practice_questions(models.Model):
     student_id                  = models.CharField(max_length=20)
@@ -31,12 +31,12 @@ class practice_questions(models.Model):
     practice_completion_time    = models.DateTimeField()
     question_id                 = models. CharField(max_length=20)
     del_row                     = models.CharField(default='False',max_length=5)
-
+ 
     class Meta:
         db_table = 'practice_questions'
 # 3
 class live_sessions(models.Model):
-
+ 
     # student_id = models.ForeignKey(Students,  on_delete=models.SET_NULL, null=True)
     session_id                  = models.AutoField(primary_key=True)
     session_title               = models.TextField()
@@ -49,7 +49,7 @@ class live_sessions(models.Model):
     session_status              = models.TextField()
     student_ids                 = models.JSONField(default=list)
     del_row                     = models.CharField(default='False',max_length=5)
-
+ 
     class Meta:
         db_table = 'live_sessions'
 # 4
@@ -63,7 +63,7 @@ class student_practiceMCQ_answers(models.Model):
     score                       = models.FloatField(default=0)
     answered_time               = models.DateTimeField()
     del_row                     = models.CharField(default='False',max_length=5)
-
+ 
     class Meta:
         db_table = 'student_practiceMCQ_answers'
 # 5
@@ -78,7 +78,7 @@ class student_practice_coding_answers(models.Model):
     Attempts                    = models.IntegerField()
     score                       = models.FloatField(default=0)
     del_row                     = models.CharField(default='False',max_length=5)
-
+ 
     class Meta:
         db_table = 'student_practice_coding_answers'
 # 6
@@ -88,7 +88,7 @@ class student_online_session(models.Model):
     attended_duration           = models.FloatField()
     display_name                = models.CharField(max_length=20)
     del_row                     = models.CharField(default='False',max_length=5)
-
+ 
     def __str__(self):
         return self.session_id
     class Meta:
@@ -101,7 +101,7 @@ class student_attendance_session_details(models.Model):
     session_out                 = models.DateTimeField()
     attended_time               = models.FloatField()
     del_row                     = models.CharField(default='False',max_length=5)
-
+ 
     class Meta:
         db_table = 'student_attendance_session_details'
 # 8
@@ -110,7 +110,7 @@ class group_announcement(models.Model):
     group_name                  = models.TextField()
     student_ids                 = models.JSONField()
     del_row                     = models.CharField(default='False',max_length=5)
-
+ 
     class Meta:
         db_table = 'group_announcement'
 # 9
@@ -122,7 +122,7 @@ class notification(models.Model):
     status                      = models.CharField(max_length=1)
     student_id                  = models.CharField(max_length=20)
     del_row                     = models.CharField(default='False',max_length=5)
-
+ 
     class Meta:
         db_table = 'notification'
 # 10
@@ -136,7 +136,7 @@ class announcements(models.Model):
     group_id                    = models.CharField(max_length=20)
     announcement_type           = models.CharField(max_length=20)
     del_row                     = models.CharField(default='False',max_length=5)
-
+ 
     class Meta:
         db_table = 'announcements'
 # 11
@@ -148,7 +148,7 @@ class students_details(models.Model):
     student_announcements       = models.JSONField(default=dict)
     student_education_details   = models.JSONField(default=list)
     del_row                     = models.CharField(default='False',max_length=5)
-    
+   
     class Meta:
         db_table = 'students_details'
 # 12
@@ -158,7 +158,7 @@ class participant(models.Model):
     display_name                = models.CharField(max_length=20)
     attended_time               = models.FloatField()
     del_row                     = models.CharField(default='False',max_length=5)
-
+ 
     class Meta:
         db_table = 'participant'
 # 13
@@ -168,10 +168,10 @@ class logs(models.Model):
     session_start_time          = models.DateTimeField()
     session_end_time            = models.DateTimeField()
     del_row                     = models.CharField(default='False',max_length=5)
-
+ 
     class Meta:
         db_table = 'logs'
-
+ 
 class trainers_details(models.Model):
     trainer_id                  = models.CharField(max_length=20, primary_key=True)
     batch_ids                   = models.JSONField(default=dict)
@@ -179,8 +179,8 @@ class trainers_details(models.Model):
     del_row                     = models.CharField(default='False',max_length=5)
     class Meta:
         db_table = 'trainers_details'
-      
-class issue_details(models.Model): 
+     
+class issue_details(models.Model):
     sl_id                       = models.AutoField(primary_key=True)
     student_id                  = models.CharField(max_length=20)
     image_path                  = models.TextField()
@@ -191,7 +191,7 @@ class issue_details(models.Model):
     resolved_time               = models.DateTimeField()
     comments                    = models.JSONField(default=dict)
     del_row                     = models.CharField(default='False',max_length=5)
-
+ 
     class Meta:
         db_table = 'issue_details'
-    
+   

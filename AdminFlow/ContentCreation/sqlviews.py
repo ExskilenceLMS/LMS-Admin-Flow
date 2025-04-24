@@ -181,7 +181,7 @@ def save(request):
                     question = questions.objects.get(question_id=qn_id)
                     question.last_updated_by = last_updated_by
                     question.last_updated_time=get_ist_time()
-                    question.tags = ','.join(data.get('Tags', [])) if isinstance(data.get('Tags'), list) else data.get('Tags', '')
+                    question.tags = data.get('Tags', [])
                     question.save()
 
                     return JsonResponse({
@@ -259,8 +259,8 @@ def save(request):
                     created_by=data.get('CreatedBy'),
                     last_updated_by=last_updated_by,
                     reviewed_by='',
-                    tags=','.join(data.get('Tags', [])) if isinstance(data.get('Tags'), list) else data.get('Tags', '')
-                )
+                    tags=data.get('Tags', [])
+                     )
                 question.save()
                 subtopic.coding = questions.objects.filter(sub_topic_id=subtopic, question_type='coding').count()
                 subtopic.save()

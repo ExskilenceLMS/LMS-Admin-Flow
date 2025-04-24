@@ -162,12 +162,12 @@ def create_student(request):
                     student.student_gender = data.get("student_gender", student.student_gender)
                     student.student_pincode = data.get("student_pincode", student.student_pincode)
                     student.student_alt_phone = data.get("student_altphone", student.student_alt_phone)
-                    student.isActive = data.get("student_isActive", student.isActive)
+                    student.isActive = data.get("isActive", student.isActive)
                     student.student_dob = dob
                     student.student_qualification = data.get("student_qualification", student.student_qualification)
                     student.batch_id = batch_instance
-                    student.address = data.get("student_address", student.address)
-                    student.phone = data.get("student_phone", student.phone)
+                    student.address = data.get("address", student.address)
+                    student.phone = data.get("phone", student.phone)
                     student.student_type = data.get("student_type", student.student_type)
                     student.college = data.get("college", student.college)
                     student.branch = data.get("branch", student.branch)
@@ -183,7 +183,7 @@ def create_student(request):
             else:
                 existing_count = students_info.objects.count() + 1
                 course_instance = courses.objects.get(course_id=data["course_id"])
-                generated_student_id = f'Stud{existing_count}'
+                # generated_student_id = f'Stud{existing_count}'
                 batch_instance = batches.objects.get(batch_id=data['batch_id'])
                 
                 new_student = students_info(
@@ -198,12 +198,12 @@ def create_student(request):
                     student_gender=data.get("student_gender", None),
                     student_pincode=data.get("student_pincode", None),
                     student_alt_phone=data.get("student_altphone", None),
-                    isActive=data.get("student_isActive", None),
+                    isActive=data.get("isActive", None),
                     student_dob=dob,
                     student_qualification=data.get("student_qualification", None),
                     batch_id=batch_instance,
-                    address=data.get("student_address", None),
-                    phone=data.get("student_phone", None),
+                    address=data.get("address", None),
+                    phone=data.get("phone", None),
                     student_type=data.get("student_type", None),
                     college=data.get("college", None),
                     branch=data.get("branch", None),
@@ -238,13 +238,35 @@ def import_students(request):
     students_data = data.get("data")
 
     edited_count = 0
-    edited_student=""
+    edited_student = ""
     saved_count = 0
     error_count = 0
-    saved_student=""
-    error_student=""
+    saved_student = ""
+    error_student = ""
+    max_students_reached = ""
+
+    try:
+        batch_instance = batches.objects.get(batch_id=batch_id)
+    except batches.DoesNotExist:
+        return JsonResponse({
+            'message': 'Batch does not exist',
+            'error_count': 1
+        }, status=400)
+
+    current_student_count = students_info.objects.filter(batch_id=batch_instance, del_row=False).count()
+    max_students = batch_instance.max_no_of_students
+
+    mandatory_fields = ["FirstName", "LastName", "Gender", "EmailId", "StudentType", "College", "Branch", "Mobile", "IsActive", "Allocate", "DOB"]
 
     for student in students_data:
+        print(f"Processing student: {student}")
+        missing_fields = [field for field in mandatory_fields if field not in student]
+        if missing_fields:
+            error_count += 1
+            error_student += f"{student.get('EmailId', 'Unknown')} (Missing fields: {', '.join(missing_fields)}), "
+            print(f"Error: Missing fields for student {student.get('EmailId', 'Unknown')}: {', '.join(missing_fields)}")
+            continue
+
         student_email = student["EmailId"]
         exist = students_info.objects.filter(student_email=student_email).first()
 
@@ -253,28 +275,28 @@ def import_students(request):
                 course_instance = courses.objects.get(course_id=course_id)
             except courses.DoesNotExist:
                 error_count += 1
-                error_student+=f"{student_email}, "
-                continue
-            try:
-                batch_instance = batches.objects.get(batch_id=batch_id)
-            except batches.DoesNotExist:
-                error_count += 1
-                error_student+=f"{student_email}, "
+                error_student += f"{student_email} (Course does not exist), "
+                print(f"Error: Course does not exist for student {student_email}")
                 continue
 
             dob_str = student["DOB"]
-            if dob_str=="":
-                dob=None
+            if dob_str == "":
+                dob = None
             else:
                 try:
-                    dob = datetime.strptime(dob_str, '%d/%m/%Y').strftime('%Y-%m-%d')
+                    if len(dob_str.split('/')[-1]) == 4:
+                        dob = datetime.strptime(dob_str, '%d/%m/%Y').strftime('%Y-%m-%d')
+                    else:
+                        dob = datetime.strptime(dob_str, '%d/%m/%y').strftime('%Y-%m-%d')
                 except ValueError:
                     error_count += 1
+                    error_student += f"{student_email} (Invalid DOB format), "
+                    print(f"Error: Invalid DOB format for student {student_email}")
                     continue
 
             is_active = student["IsActive"].upper() == "TRUE"
             allocate_value = student["Allocate"].upper() == "TRUE"
-
+            create_stud({"student_id": exist.student_id})
             exist.student_firstname = student["FirstName"]
             exist.student_lastname = student["LastName"]
             exist.course_id = course_instance
@@ -282,15 +304,15 @@ def import_students(request):
             exist.student_email = student_email
             exist.student_dob = dob
             exist.student_gender = student["Gender"]
-            exist.student_country = student["Country"]
-            exist.student_state = student["State"]
-            exist.student_city = student["City"]
-            exist.address = student["Address"]
-            exist.student_pincode = student["Pincode"]
+            exist.student_country = student.get("Country", "")
+            exist.student_state = student.get("State", "")
+            exist.student_city = student.get("City", "")
+            exist.address = student.get("Address", "")
+            exist.student_pincode = student.get("Pincode", "")
             exist.phone = student["Mobile"]
-            exist.student_alt_phone = student["AltMobile"]
+            exist.student_alt_phone = student.get("AltMobile", "")
             exist.isActive = is_active
-            exist.student_qualification = student["Qualification"]
+            exist.student_qualification = student.get("Qualification", "")
             exist.student_type = student["StudentType"]
             exist.college = student["College"]
             exist.branch = student["Branch"]
@@ -300,34 +322,35 @@ def import_students(request):
             edited_student += f"{student_email}, "
 
         else:
-            print('123')
+            if current_student_count >= max_students:
+                max_students_reached += f"{student_email}, "
+                continue
+
             try:
                 course_instance = courses.objects.get(course_id=course_id)
             except courses.DoesNotExist:
                 error_count += 1
-                continue
-
-            existing_count = students_info.objects.count() + 1
-            generated_student_id = f'Stud{existing_count}'
-            print('4')
-            try:
-                batch_instance = batches.objects.get(batch_id=batch_id)
-            except batches.DoesNotExist:
-                error_count += 1
+                error_student += f"{student_email} (Course does not exist), "
                 continue
 
             dob_str = student["DOB"]
             try:
-                dob = datetime.strptime(dob_str, '%d/%m/%Y').strftime('%Y-%m-%d')
+                if len(dob_str.split('/')[-1]) == 4:
+                    dob = datetime.strptime(dob_str, '%d/%m/%Y').strftime('%Y-%m-%d')
+                else:
+                    dob = datetime.strptime(dob_str, '%d/%m/%y').strftime('%Y-%m-%d')
             except ValueError:
                 error_count += 1
+                error_student += f"{student_email} (Invalid DOB format), "
+                print(f"Error: Invalid DOB format for new student {student_email}")
                 continue
-            
+
             is_active = student["IsActive"].upper() == "TRUE"
             allocate_value = student["Allocate"].upper() == "TRUE"
 
+            id = generate_id(student['College'], student['Branch'], student['StudentType'][0])
             new_student = students_info(
-                student_id=generated_student_id,
+                student_id=id,
                 student_firstname=student["FirstName"],
                 student_lastname=student["LastName"],
                 course_id=course_instance,
@@ -335,34 +358,40 @@ def import_students(request):
                 student_email=student_email,
                 student_dob=dob,
                 student_gender=student["Gender"],
-                student_country=student["Country"],
-                student_state=student["State"],
-                student_city=student["City"],
-                address=student["Address"],
-                student_pincode=student["Pincode"],
+                student_country=student.get("Country", ""),
+                student_state=student.get("State", ""),
+                student_city=student.get("City", ""),
+                address=student.get("Address", ""),
+                student_pincode=student.get("Pincode", ""),
                 phone=student["Mobile"],
-                student_alt_phone=student["AltMobile"],
+                student_alt_phone=student.get("AltMobile", ""),
                 isActive=is_active,
-                student_qualification=student["Qualification"],
+                student_qualification=student.get("Qualification", ""),
                 student_type=student["StudentType"],
                 college=student["College"],
                 branch=student["Branch"],
                 allocate=allocate_value
             )
             new_student.save()
-
+            create_stud({"student_id": new_student.student_id})
+            current_student_count += 1
             saved_count += 1
             saved_student += f"{student_email}, "
 
-    return JsonResponse({
+    response_data = {
         'message': 'Students imported successfully',
         'edited_count': edited_count,
         'saved_count': saved_count,
         'error_count': error_count,
         'edited_student': edited_student,
-        "saved_student": saved_student,
-        'error_student': error_student
-    })
+        'saved_student': saved_student,
+        'error_student': error_student,
+    }
+
+    if max_students_reached:
+        response_data['max_students_reached'] = 'Maximum no of students was ' + str(max_students) + '. Hence these students were not added: ' + max_students_reached
+
+    return JsonResponse(response_data)
 
 @api_view(['POST'])
 def check_mail_and_number(request):

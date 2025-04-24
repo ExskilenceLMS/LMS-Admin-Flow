@@ -266,7 +266,7 @@ def course_Plan(request):
                     question = questions.objects.get(question_id=qn_id)
                     question.last_updated_time = course.get_ist_time()
                     question.last_updated_by = last_updated_by
-                    question.tags = ','.join(data.get('Tags', [])) if isinstance(data.get('Tags'), list) else data.get('Tags', '')  # Store as CSV in DB
+                    question.tags = data.get('Tags', []) 
                     question.save()
                     return JsonResponse({
                         'message': 'Question updated successfully',
@@ -338,7 +338,7 @@ def course_Plan(request):
                         created_by=data.get('CreatedBy'),
                         last_updated_by=last_updated_by,
                         reviewed_by='',
-                        tags=','.join(data.get('Tags', [])) if isinstance(data.get('Tags'), list) else data.get('Tags', '')
+                        tags=data.get('Tags', [])
                     )
                     question.save()
                     subtopic.coding = questions.objects.filter(sub_topic_id=subtopic, question_type='coding').count()
@@ -391,7 +391,7 @@ def course_Plan(request):
                         last_updated_time=course.get_ist_time(),
                         last_updated_by=last_updated_by,
                         reviewed_by='',
-                        tags=','.join(data.get('Tags', [])) if isinstance(data.get('Tags'), list) else data.get('Tags', '')
+                        tags=data.get('Tags', [])
                     )
                     question.save()
                     subtopic.mcq = questions.objects.filter(sub_topic_id=subtopic, question_type='mcq').count()
