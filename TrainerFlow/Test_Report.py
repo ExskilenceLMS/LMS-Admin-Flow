@@ -4,6 +4,8 @@ from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from LMS_MSSQLdb_App.models import tracks as track_model,subjects as subject_model,topics as topic_model,suite_login_details,test_details,courses as course_model,batches as batch_model
 from LMS_MSSQLdb_App.models import students_info as student_model,students_assessments 
+<<<<<<< HEAD
+=======
 from django.db.models import Count
 from LMS_MSSQLdb_App.models import *
 @api_view(['GET'])
@@ -58,6 +60,7 @@ def filter_for_Test_Report(request):
             'test_type':Test_type
             
         }, status=200)
+>>>>>>> 919c791f1b99dbb98aea5dd7533f6988e72cde6c
 
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)

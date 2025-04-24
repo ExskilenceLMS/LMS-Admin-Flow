@@ -1,5 +1,5 @@
 from django.db import models
-
+ 
 # Create your models here.
 # 1
 class tracks(models.Model):
@@ -30,11 +30,11 @@ class subjects(models.Model):
     modified_at = models.DateTimeField()
     action = models.CharField(max_length=100, null=True, blank=True)
     del_row = models.BooleanField(default=False)
-
-
+ 
+ 
     def __str__(self):
         return self.subject_name
-
+ 
     class Meta:
         db_table = 'subjects'
 # 3
@@ -50,7 +50,7 @@ class topics(models.Model):
     modified_at = models.DateTimeField()
     action = models.CharField(max_length=100, null=True, blank=True)
     del_row = models.BooleanField(default=False)
-
+ 
     def __str__(self):
         return self.topic_name
     class Meta:
@@ -72,13 +72,13 @@ class sub_topics(models.Model):
     modified_at = models.DateTimeField()
     action = models.CharField(max_length=100, null=True, blank=True)
     del_row = models.BooleanField(default=False)
-
+ 
     def __str__(self):
         return self.sub_topic_name
-
+ 
     class Meta:
         db_table = 'sub_topics'
-
+ 
 # 5
 class courses(models.Model):
     course_id = models.CharField(max_length=20, unique=True)
@@ -93,10 +93,10 @@ class courses(models.Model):
     action = models.CharField(max_length=100, null=True, blank=True)
     tracks= models.TextField(default=None, blank=True, null=True)
     del_row = models.BooleanField(default=False)
-
+ 
     def __str__(self):
         return self.course_name
-
+ 
     class Meta:
         db_table = 'courses'
 # 6
@@ -109,12 +109,12 @@ class course_subjects(models.Model):
     is_mandatory = models.BooleanField()
     path = models.CharField(max_length=250)
     del_row = models.BooleanField(default=False)
-
+ 
     def __str__(self):
         return f"{self.course_id.course_name} - {self.subject_id.subject_name}"
     class Meta:
         db_table = 'course_subjects'
-# 7 
+# 7
 class batches(models.Model):
     batch_id = models.CharField(max_length=20, primary_key=True)
     course_id = models.ForeignKey(courses, on_delete=models.CASCADE)
@@ -124,7 +124,7 @@ class batches(models.Model):
     start_date = models.DateTimeField()
     indicative_date = models.DateTimeField()
     del_row = models.BooleanField(default=False)
-
+ 
     def __str__(self):
         return self.batch_name
     class Meta:
@@ -140,12 +140,12 @@ class course_plan_details(models.Model):
     duration_in_hours = models.IntegerField()
     batch_id = models.ForeignKey(batches,  on_delete=models.SET_NULL, null=True,default=None)
     del_row = models.BooleanField(default=False)
-
+ 
     def __str__(self):
         return f"{self.course_id.course_name} - {self.subject_id.subject_name}"
     class Meta:
         db_table = 'course_plan_details'
-
+ 
 # 9
 class students_info(models.Model):
     student_id = models.CharField(max_length=20, primary_key=True)
@@ -196,7 +196,7 @@ class trainers(models.Model):
     leetcode = models.CharField(max_length=100, blank=True, null=True)
     hackerrank = models.CharField(max_length=100, blank=True, null=True)
     del_row = models.BooleanField(default=False)
-
+ 
     def __str__(self):
         return f"{self.trainer_name}"
     class Meta:
@@ -211,10 +211,10 @@ class trainer_review_comments(models.Model):
     comment = models.CharField(max_length=20)
     date_time = models.DateTimeField()
     del_row = models.BooleanField(default=False)
-
+ 
     class Meta:
         db_table = 'trainer_review_comments'
-
+ 
 # 12
 class test_details(models.Model):
     test_id = models.CharField(max_length=20, primary_key=True)
@@ -232,10 +232,10 @@ class test_details(models.Model):
     tags = models.JSONField(default=list, blank=True)
     test_date_and_time = models.DateTimeField(default=None, null=True)
     del_row = models.BooleanField(default=False)
-
+ 
     def __str__(self):
         return self.test_name
-
+ 
     class Meta:
         db_table = 'test_details'
 # 13
@@ -251,7 +251,7 @@ class questions(models.Model):
     tags = models.JSONField(default=list, blank=True)
     sub_topic_id = models.ForeignKey(sub_topics, on_delete=models.SET_NULL, null=True)
     del_row = models.BooleanField(default=False)
-
+ 
     class Meta:
         db_table = 'questions'
 # 14
@@ -263,7 +263,7 @@ class test_sections(models.Model):
     sub_topic_id = models.ForeignKey(sub_topics, on_delete=models.SET_NULL, null=True)
     question_id = models.ForeignKey(questions, on_delete=models.SET_NULL, null=True)
     del_row = models.BooleanField(default=False)
-    
+   
     class Meta:
         unique_together = ('test_id', 'question_id')
         db_table = 'test_sections'
@@ -282,10 +282,17 @@ class students_assessments(models.Model):
     assessment_rank             = models.IntegerField(default=None, null=True)
     assessment_overall_rank     = models.IntegerField(default=None, null=True)
     del_row                     = models.CharField(default='False',max_length=5)
+<<<<<<< HEAD
+ 
+    class Meta:
+        db_table = 'students_assessments'
+# 16
+=======
 
     class Meta:
         db_table = 'students_assessments'
 # 16 
+>>>>>>> 919c791f1b99dbb98aea5dd7533f6988e72cde6c
 class student_activities(models.Model):
     student_id = models.ForeignKey(students_info,  on_delete=models.SET_NULL, null=True)
     subject_id = models.ForeignKey(subjects,  on_delete=models.SET_NULL, null=True)
@@ -295,17 +302,22 @@ class student_activities(models.Model):
     activity_topic = models.ForeignKey(topics, on_delete=models.SET_NULL, null=True)
     activity_subtopic = models.ForeignKey(sub_topics, on_delete=models.SET_NULL, null=True)
     del_row = models.BooleanField(default=False)
-
+ 
     class Meta:
         db_table = 'student_activities'
+<<<<<<< HEAD
+ 
+# 17
+=======
 
 # 17 
+>>>>>>> 919c791f1b99dbb98aea5dd7533f6988e72cde6c
 class student_app_usage(models.Model):
     student_id = models.CharField(max_length=20)
     logged_in = models.DateTimeField()
     logged_out = models.DateTimeField()
     del_row = models.BooleanField(default=False)
-
+ 
     class Meta:
         db_table = 'student_app_usage'
 # 18    
@@ -316,7 +328,7 @@ class college_details(models.Model):
     college_code = models.CharField(max_length=20)
     # college_type = models.CharField(max_length=20) # 10th or 12th or diploma or degree or 10th#12th/diploma#BE
     del_row = models.BooleanField(default=False)
-
+ 
     class Meta:
         db_table = 'college_details'
 # 19
@@ -325,10 +337,10 @@ class branch_details(models.Model):
     branch_id = models.CharField(max_length=20)
     branch = models.CharField(max_length=20)
     del_row = models.BooleanField(default=False)
-
+ 
     class Meta:
         db_table = 'branch_details'
-
+ 
 # class ranks(models.Model):
 #20
 class suite_login_details(models.Model):
@@ -346,4 +358,3 @@ class suite_login_details(models.Model):
  
     class Meta:
         db_table = 'suite_login_details'
- 

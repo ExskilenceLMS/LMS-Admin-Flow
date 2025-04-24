@@ -30,7 +30,7 @@ from AdminFlow import subject_plan as subject_plan_views
 from AdminFlow import collegeBranch as college_branch_views
 
 from AdminFlow.ContentCreation import sqlviews as sql_views
-from AdminFlow.ContentCreation import contentCreation as content_creation_views
+from AdminFlow.ContentCreation import contentCreation as content_creation_views, mcqBulkUpload as mcqBulkUpload_views
 
 from AdminFlow import batchstatus as batchstatus_views 
 urlpatterns = [
@@ -124,5 +124,7 @@ urlpatterns = [
     path('Content_creation/get_specific_question/',content_creation_views.get_specific_question,name="get_specific_questions"),
     path('Content_creation/get_content_for_subtopic/',content_creation_views.get_content_for_subtopic,name="get_content_for_subtopic"),
     path('Content_creation/content/',content_creation_views.content,name="content"),
+
+    path('Content_creation/bulk_mcq_upload/',mcqBulkUpload_views.bulk_mcq_upload,name="bulk_mcq_upload"),
 ]
 
