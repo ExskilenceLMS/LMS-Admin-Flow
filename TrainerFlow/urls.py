@@ -18,5 +18,6 @@ urlpatterns = [
     path('filters/assign/<str:course>/<str:batch>/<str:testID>/',t_assign.get_students,name="filters to get students"),
     path('tests/assign/',t_assign.assign_tests,name='Assign tests to students'),
     # Test Report
+    path('filters/report/',t_report.filter_for_Test_Report,name="filters for report"),
     path('tests/report/',t_report.get_tests_Report_details,name="tests report"),
 ]

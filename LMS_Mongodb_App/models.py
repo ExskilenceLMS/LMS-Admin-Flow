@@ -17,7 +17,11 @@ from djongo import models
 #     assessment_rank             = models.IntegerField(default=None, null=True)
 #     assessment_overall_rank     = models.IntegerField(default=None, null=True)
 #     del_row                     = models.CharField(default='False',max_length=5)
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 919c791f1b99dbb98aea5dd7533f6988e72cde6c
 #     class Meta:
 #         db_table = 'students_assessments'
 # 2

@@ -282,10 +282,17 @@ class students_assessments(models.Model):
     assessment_rank             = models.IntegerField(default=None, null=True)
     assessment_overall_rank     = models.IntegerField(default=None, null=True)
     del_row                     = models.CharField(default='False',max_length=5)
+<<<<<<< HEAD
  
     class Meta:
         db_table = 'students_assessments'
 # 16
+=======
+
+    class Meta:
+        db_table = 'students_assessments'
+# 16 
+>>>>>>> 919c791f1b99dbb98aea5dd7533f6988e72cde6c
 class student_activities(models.Model):
     student_id = models.ForeignKey(students_info,  on_delete=models.SET_NULL, null=True)
     subject_id = models.ForeignKey(subjects,  on_delete=models.SET_NULL, null=True)
@@ -298,8 +305,13 @@ class student_activities(models.Model):
  
     class Meta:
         db_table = 'student_activities'
+<<<<<<< HEAD
  
 # 17
+=======
+
+# 17 
+>>>>>>> 919c791f1b99dbb98aea5dd7533f6988e72cde6c
 class student_app_usage(models.Model):
     student_id = models.CharField(max_length=20)
     logged_in = models.DateTimeField()
