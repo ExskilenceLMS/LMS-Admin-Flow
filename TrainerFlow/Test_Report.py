@@ -81,7 +81,7 @@ def get_tests_Report_details(request):
         if data.get('date')!= "":
             filters.update({'test_date_and_time__date':data.get('date')})
 
-        tests = test_details.objects.filter(**filters,test_date_and_time__lte=datetime.now(),del_row=False)
+        tests = test_details.objects.filter(**filters,test_date_and_time__lte=datetime.now().__add__(timedelta(hours=5,minutes=30)),del_row=False)
         test_ids = [test.test_id for test in tests]
         Invited = students_assessments.objects.filter(test_id__in=test_ids,del_row='False'
                                                                        ).values('test_id').annotate(count=Count('test_id'))
