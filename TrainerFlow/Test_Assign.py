@@ -11,7 +11,11 @@ def filter_for_assign_tests(request):
         courses = list(course_model.objects.filter(del_row=False))
         subjects = list(subject_model.objects.filter(del_row=False))
         return JsonResponse({
+            'tracks':  [ track.track_name for track in tracks],  
             'courses': {
+                track.track_name:[course.course_name for course in courses if course.tracks.split(",").count(track.track_name)>0] for track in tracks
+             },
+            'subjects': {
                track.track_name:{
                         course.course_name:[
                             subject.subject_name for subject in subjects if subject.track_id.track_name == track.track_name
@@ -61,7 +65,9 @@ def get_tests_details(request):
                 'time': test.test_date_and_time.time()  if test.test_date_and_time else None,
                 'track': test.track_id.track_name if test.track_id else None,
                 'course': test.course_id.course_name if test.course_id else None,
-                'test_type': test.test_type if test.test_type else None
+                'test_type': test.test_type if test.test_type else None,
+                'testing': str(datetime.strptime(str(date_value).split('+')[0].split('.')[0], "%Y-%m-%d %H:%M:%S")),
+                'NOW':str(datetime.now())
 
                 })
         return JsonResponse(test_data, safe=False)
@@ -90,7 +96,8 @@ def filter_for_sorting_students(request,track):
         batches = list(batch_model.objects.filter(course_id__tracks__contains=track,del_row=False))
 
         return JsonResponse({
-            'courses': {
+            'courses':[ course.course_name for course in courses],
+            'batches': {
                         course.course_name:[
                             batche.batch_name for batche in batches if batche.course_id.course_name == course.course_name
                                            ] for course in courses                   
