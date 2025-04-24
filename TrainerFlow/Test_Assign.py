@@ -83,7 +83,7 @@ def update_test_details(request):
         test.track_id = track_model.objects.get(track_name = data.get('track'),del_row = False)
         test.course_id = course_model.objects.get(course_name = data.get('course'),del_row = False)
         test.subject_id = subject_model.objects.get(subject_name = data.get('subject'),del_row = False)
-        test.test_date_and_time = datetime.strptime(data.get('date'), '%Y-%m-%d').__add__(timedelta(days=0, hours=int(data.get('time').split(':')[0]), minutes=int(data.get('time').split(':')[1]), seconds= int(data.get('time').split(':')[2])))
+        test.test_date_and_time = datetime.strptime(data.get('date'), '%Y-%m-%d').__add__(timedelta(days=0, hours=int(data.get('time').split(':')[0]), minutes=int(data.get('time').split(':')[1])))
         test.save()
         return JsonResponse({'message':'success'}, status=200)
 

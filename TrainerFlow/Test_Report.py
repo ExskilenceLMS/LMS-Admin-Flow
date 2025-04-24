@@ -66,6 +66,8 @@ def get_tests_Report_details(request):
 
         if data.get('track') != "":
             filters.update({'track_id__track_name':data.get('track')})
+        if data.get('course') != "":
+            filters.update({'course_id__course_name':data.get('course')})
         if data.get('subject')!= "":
             filters.update({'subject_id__subject_name':data.get('subject')})
         if data.get('topic')!= "":
@@ -83,9 +85,10 @@ def get_tests_Report_details(request):
 
         tests = test_details.objects.filter(**filters,test_date_and_time__lte=datetime.now().__add__(timedelta(hours=5,minutes=30)),del_row=False)
         test_ids = [test.test_id for test in tests]
-        Invited = students_assessments.objects.filter(test_id__in=test_ids,del_row='False'
-                                                                       ).values('test_id').annotate(count=Count('test_id'))
-        Invited = {test.get('test_id'):test.get('count') for test in Invited}
+        Invited = students_assessments.objects.filter(test_id__in=test_ids,del_row=False)
+        test_counts ={}
+        [test_counts.update({test.test_id.test_id :test_counts.get(test.test_id.test_id,0)+1}) for test in Invited ]
+
         test_data = []
         for test in tests:
             test_data.append({
@@ -101,7 +104,7 @@ def get_tests_Report_details(request):
                 'track': test.track_id.track_name if test.track_id else None,
                 'course': test.course_id.course_name if test.course_id else None,
                 'test_type': test.test_type if test.test_type else None,
-                'invited':Invited.get(test.test_id,0),
+                'invited':test_counts.get(test.test_id,0),
 
             })
         return JsonResponse(test_data, safe=False)
