@@ -116,6 +116,7 @@ def get_students(request,course,batch,testID):
             'students':students,
             'assigned_students_ids':[i.get('student_id') for i in assigned_students]
         }
+        # [stud for stud in students if stud.get('student_id') in [i.get('student_id') for i in assigned_students]]
         return JsonResponse(response,safe=False, status=200)
 
     except Exception as e:
