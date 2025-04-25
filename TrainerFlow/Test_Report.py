@@ -13,12 +13,14 @@ def filter_for_Test_Report(request):
         courses  = list(course_model.objects.filter(del_row=False))
         subjects = list(subject_model.objects.filter(del_row=False))
         topics   = list(topic_model.objects.filter(del_row=False))
-        batchs   = list(batch_model.objects.filter(del_row=False))
+        batches   = list(batch_model.objects.filter(del_row=False))
         LiveorCompleted = ['Live','Completed']
         Colleges = list(college_details.objects.filter(del_row=False))
         branchs  = list(branch_details.objects.filter(del_row=False))
         student_type = ['Swapnodaya','Exskilence']
         Test_type = list(test_details.objects.filter(del_row=False).values_list('test_type',flat=True).distinct())
+        batches_list = []
+        [batches_list.append(i.batch_name) for i in batches if i.batch_name not in batches_list]
         return JsonResponse({
             'tracks':  [ track.track_name for track in tracks],  
             'courses':{
@@ -42,9 +44,7 @@ def filter_for_Test_Report(request):
                                             }      for course in courses if course.tracks.split(",").count(track.track_name)>0
                                 } for track in tracks
                         },
-            'batches':[
-                batch.batch_name for batch in batchs
-            ],
+            'batches':batches_list,
             'liveorCompleted':LiveorCompleted,
             'colleges':[ college.college_name for college in Colleges],
             'branches':{

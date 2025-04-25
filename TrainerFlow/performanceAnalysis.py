@@ -48,8 +48,8 @@ def performanceAnalysis(request):
             'student_overall_rank':stud.student_overall_rank,    
             'student_email':stud.student_email
                           }) for stud in student]   
-        # Student_details = students_details.objects.using('mongodb').filter(**student_filters,del_row=False)
-        # [data.update({'student_id':student_data.student_question_details}) for student_data in Student_details]
+        Student_details = students_details.objects.using('mongodb').filter(**student_filters,del_row=False)
+        [data.update({'student_id':student_data.student_question_details}) for student_data in Student_details]
         return JsonResponse({'message': 'student','data':response})
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
