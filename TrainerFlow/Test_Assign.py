@@ -149,7 +149,7 @@ def assign_tests(request):
                 subject_id = test.subject_id,
                 test_id = test,
                 course_id = test.course_id,
-                assessment_status ='P',
+                assessment_status ='Pending',
                 assessment_score_secured = 0,
                 assessment_max_score = test.test_marks
             )

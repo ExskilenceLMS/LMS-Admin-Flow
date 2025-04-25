@@ -111,8 +111,8 @@ def get_tests_Report_details(request):
                 'marks': test.test_marks,
                 'subject': test.subject_id.subject_name if test.subject_id else None,
                 'date': test.test_date_and_time.date() if test.test_date_and_time else None,
-                'from_time': test.test_date_and_time.time()  if test.test_date_and_time else None,
-                'end_time': test.test_date_and_time.__add__(timedelta(minutes=int(test.test_duration))).time()  if test.test_date_and_time else None,
+                'from_time': str(test.test_date_and_time.strftime('%I:%M %p')) if test.test_date_and_time else None,
+                'end_time': str(test.test_date_and_time.__add__(timedelta(minutes=int(test.test_duration))).strftime('%I:%M %p'))  if test.test_date_and_time else None,
                 'track': test.track_id.track_name if test.track_id else None,
                 'course': test.course_id.course_name if test.course_id else None,
                 'test_type': test.test_type if test.test_type else None,
@@ -185,11 +185,11 @@ def get_students_test_report(request,testID):
                     "branch"        :Student.student_id.branch,
                     "category"      :Student.student_id.student_type,
                     "test_status"   :Student.assessment_status,
-                    "datetime"      :(str(test_detaile.test_date_and_time)+' to '
-                                        +str(test_detaile.test_date_and_time)
+                    "datetime"      :(date_formater(test_detaile.test_date_and_time)+' to '
+                                        +date_formater(test_detaile.test_date_and_time)
                                         ) if Student.assessment_status != 'C' else (
-                                            str(test_detaile.test_date_and_time)+' to '
-                                                    +str(test_detaile.test_date_and_time.__add__(timedelta(minutes=int(test_detaile.test_duration)))))
+                                            date_formater(test_detaile.test_date_and_time)+' to '
+                                                    +date_formater(test_detaile.test_date_and_time.__add__(timedelta(minutes=int(test_detaile.test_duration)))))
 
                 }) 
         response  = {
@@ -197,8 +197,8 @@ def get_students_test_report(request,testID):
             "course_name"   :test_detaile.course_id.course_name,
             "batch_name"    :Students_objs[0].student_id.batch_id.batch_name if len(Students_objs) > 0 else None,
             'test_status'   :'Completed' if datetime.strptime(str(test_detaile.test_date_and_time.__add__(timedelta(minutes=int(test_detaile.test_duration)))).split('+')[0].split('.')[0], "%Y-%m-%d %H:%M:%S") < datetime.now().__add__(timedelta(hours=5,minutes=30)) else 'Live',
-            'test_start_time':test_detaile.test_date_and_time,
-            'test_end_time' :test_detaile.test_date_and_time.__add__(timedelta(minutes=int(test_detaile.test_duration))),
+            'test_start_time':date_formater(test_detaile.test_date_and_time),
+            'test_end_time' :date_formater(test_detaile.test_date_and_time.__add__(timedelta(minutes=int(test_detaile.test_duration)))),
             'duration'      :test_detaile.test_duration,
             "report"        :report
         }
@@ -206,3 +206,6 @@ def get_students_test_report(request,testID):
 
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+
+def date_formater(date_time):
+    return str(date_time.day)+'-'+str(date_time.month)+'-'+str(date_time.year)[-2:]+' '+str(date_time.strftime('%I:%M %p'))

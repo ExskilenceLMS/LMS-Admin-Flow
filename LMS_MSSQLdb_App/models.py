@@ -274,7 +274,7 @@ class students_assessments(models.Model):
     subject_id                  = models.ForeignKey(subjects, on_delete=models.SET_NULL, null=True)
     assessment_type             = models.CharField(max_length=20)
     test_id                     = models.ForeignKey(test_details, on_delete=models.CASCADE, db_column="Test_id")
-    assessment_status           = models.CharField(max_length=20,choices=[('P','pending'),('S','started'),('C','completed')])
+    assessment_status           = models.CharField(max_length=20,choices=[('Pending','Pending'),('Started','Started'),('Completed','Completed')])
     assessment_score_secured    = models.FloatField()
     assessment_max_score        = models.FloatField()
     assessment_week_number      = models.IntegerField(default=None, null=True)

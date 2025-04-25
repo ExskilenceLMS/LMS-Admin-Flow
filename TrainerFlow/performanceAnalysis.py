@@ -34,10 +34,7 @@ def performanceAnalysis(request):
         if data.get('subject','') != "":
             subject_filters.update({'subject_id__subject_name':data.get('subject')})
         student = list(students_info.objects.filter(**student_filters,del_row=False
-                                                    ).annotate(full_name=Concat('student_firstname', Value(' '), 'student_lastname',
-                                                                                catogory='student_catogory',
-                                                                                college_rank='student_college_rank',
-                                                                                overall_rank='student_overall_rank',)
+                                                    ).annotate(full_name=Concat('student_firstname', Value(' '), 'student_lastname')
                                                                ).values(
             'student_id',
             'full_name',
