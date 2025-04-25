@@ -124,22 +124,34 @@ def get_tests_Report_details(request):
                 
                 report =[]
                 [report.append({
-                    "student_id": Students_objs.get(student).student_id.student_id,
-                    "student_name":Students_objs.get(student).student_id.student_firstname + Students_objs.get(student).student_id.student_lastname,
-                    "college": Students_objs.get(student).student_id.college,
-                    "branch":'branch',
-                    "student_type":"student_type",
-                    "test_status": Students_objs.get(student).assessment_status,
-                    "datetime":(str(test.test_date_and_time)+' to '
-                               +str(test.test_date_and_time)
-                               ) if Students_objs.get(student).assessment_status != 'C' else (
-                                   str(test.test_date_and_time)+' to '
-                                        +str(test.test_date_and_time.__add__(timedelta(minutes=int(test.test_duration)))))
-
+                    "student_id"    : Students_objs.get(student).student_id.student_id,
+                    "student_name"  : Students_objs.get(student).student_id.student_firstname + Students_objs.get(student).student_id.student_lastname,
+                    "college"       : Students_objs.get(student).student_id.college,
+                    "branch"        : Students_objs.get(student).student_id.branch,
+                    "category"      : Students_objs.get(student).student_id.student_type,
+                    "max_marks"   : Students_objs.get(student).assessment_max_score,
+                    "obtained_marks"  : Students_objs.get(student).assessment_score_secured,
+                    "percentage"   : Students_objs.get(student).assessment_score_secured/Students_objs.get(student).assessment_max_score*100,
+                    "rank"         : Students_objs.get(student).assessment_rank,
                 }) for student in test_counts.get(test.test_id)]
                 test_data[-1].update({'status': 'Completed','report':report})
             else:
-                test_data[-1].update({'status': 'Live'})
+                report =[]
+                [report.append({
+                    "student_id"    : Students_objs.get(student).student_id.student_id,
+                    "student_name"  : Students_objs.get(student).student_id.student_firstname + Students_objs.get(student).student_id.student_lastname,
+                    "college"       : Students_objs.get(student).student_id.college,
+                    "branch"        : Students_objs.get(student).student_id.branch,
+                    "category"      : Students_objs.get(student).student_id.student_type,
+                    "test_status"   : Students_objs.get(student).assessment_status,
+                    "datetime"      :(str(test.test_date_and_time)+' to '
+                                        +str(test.test_date_and_time)
+                                        ) if Students_objs.get(student).assessment_status != 'C' else (
+                                            str(test.test_date_and_time)+' to '
+                                                    +str(test.test_date_and_time.__add__(timedelta(minutes=int(test.test_duration)))))
+
+                }) for student in test_counts.get(test.test_id)]
+                test_data[-1].update({'status': 'Live','report':report})
         return JsonResponse(test_data, safe=False)
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
