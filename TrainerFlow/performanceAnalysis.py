@@ -12,8 +12,8 @@ def filter_for_performanceAnalysis(request):
         Courses = courses.objects.filter(del_row=False)
         batch_list = batches.objects.filter(del_row=False)
         data = {
-            'Courses':[ course.course_name for course in Courses],
-            'batchs':{
+            'Courses'   :[ course.course_name for course in Courses],
+            'batchs'    :{
                 course.course_name:[batch.batch_name for batch in batch_list if batch.course_id.course_name == course.course_name] for course in Courses
             }
         }
@@ -36,17 +36,17 @@ def performanceAnalysis(request):
         student = students_info.objects.filter(**student_filters,del_row=False)
         response = []
         [response.append({
-            'student_id':stud.student_id,    
-            'full_name':stud.student_firstname+" "+stud.student_lastname,
-            'student_type':stud.student_type,
-            'college':stud.college,
-            'branch':stud.branch,
-            'phone':stud.phone,
-            'student_score':stud.student_score,
-            'student_catogory': stud.student_catogory,
-            'student_college_rank':stud.student_college_rank,    
-            'student_overall_rank':stud.student_overall_rank,    
-            'student_email':stud.student_email
+            'student_id'            :stud.student_id,    
+            'full_name'             :stud.student_firstname+" "+stud.student_lastname,
+            'student_type'          :stud.student_type,
+            'college'               :stud.college,
+            'branch'                :stud.branch,
+            'phone'                 :stud.phone,
+            'student_score'         :stud.student_score,
+            'student_catogory'      : stud.student_catogory,
+            'student_college_rank'  :stud.student_college_rank,    
+            'student_overall_rank'  :stud.student_overall_rank,    
+            'student_email'         :stud.student_email
                           }) for stud in student]   
         Student_details = students_details.objects.using('mongodb').filter(**student_filters,del_row=False)
         [data.update({'student_id':student_data.student_question_details}) for student_data in Student_details]

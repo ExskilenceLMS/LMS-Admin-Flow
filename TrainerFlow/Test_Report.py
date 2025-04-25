@@ -22,20 +22,20 @@ def filter_for_Test_Report(request):
         batches_list = []
         [batches_list.append(i.batch_name) for i in batches if i.batch_name not in batches_list]
         return JsonResponse({
-            'tracks':  [ track.track_name for track in tracks],  
-            'courses':{
+            'tracks'        :  [ track.track_name for track in tracks],  
+            'courses'       :{
                 track.track_name:[
                     course.course_name for course in courses if course.tracks.split(",").count(track.track_name)>0
                                   ] for track in tracks
             },
-            'subjects': {
+            'subjects'      : {
                 track.track_name:{
                     course.course_name:[
                         subject.subject_name for subject in subjects if subject.track_id.track_name == track.track_name
                                         ] for course in courses if course.tracks.split(",").count(track.track_name)>0
                                  } for track in tracks
              },
-            'topics': {
+            'topics'        : {
                track.track_name:{
                         course.course_name:{
                             subject.subject_name:[
@@ -44,16 +44,16 @@ def filter_for_Test_Report(request):
                                             }      for course in courses if course.tracks.split(",").count(track.track_name)>0
                                 } for track in tracks
                         },
-            'batches':batches_list,
+            'batches'       :batches_list,
             'liveorCompleted':LiveorCompleted,
-            'colleges':[ college.college_name for college in Colleges],
-            'branches':{
+            'colleges'      :[ college.college_name for college in Colleges],
+            'branches'      :{
                 college.college_name:[
                         branch.branch for branch in branchs if branch.college_id.college_name == college.college_name
                                      ] for college in Colleges
             },
-            'student_type':student_type,
-            'test_type':Test_type
+            'student_type'  :student_type,
+            'test_type'     :Test_type
             
         }, status=200)
 
@@ -105,20 +105,20 @@ def get_tests_Report_details(request):
         test_data = []
         for test in tests:
             test_data.append({
-                'test_id': test.test_id,
-                'title': test.test_name,
-                'description': test.test_description,
-                'duration': test.test_duration,
-                'marks': test.test_marks,
-                'subject': test.subject_id.subject_name if test.subject_id else None,
-                'date': test.test_date_and_time.date() if test.test_date_and_time else None,
-                'from_time': str(test.test_date_and_time.strftime('%I:%M %p')) if test.test_date_and_time else None,
-                'end_time': str(test.test_date_and_time.__add__(timedelta(minutes=int(test.test_duration))).strftime('%I:%M %p'))  if test.test_date_and_time else None,
-                'track': test.track_id.track_name if test.track_id else None,
-                'course': test.course_id.course_name if test.course_id else None,
-                'test_type': test.test_type if test.test_type else None,
-                'invited':test_counts.get(test.test_id,0),
-                'test_end_time':test.test_date_and_time.__add__(timedelta(minutes=int(test.test_duration)))
+                'test_id'       : test.test_id,
+                'title'         : test.test_name,
+                'description'   : test.test_description,
+                'duration'      : test.test_duration,
+                'marks'         : test.test_marks,
+                'subject'       : test.subject_id.subject_name if test.subject_id else None,
+                'date'          : test.test_date_and_time.date() if test.test_date_and_time else None,
+                'from_time'     : str(test.test_date_and_time.strftime('%I:%M %p')) if test.test_date_and_time else None,
+                'end_time'      : str(test.test_date_and_time.__add__(timedelta(minutes=int(test.test_duration))).strftime('%I:%M %p'))  if test.test_date_and_time else None,
+                'track'         : test.track_id.track_name if test.track_id else None,
+                'course'        : test.course_id.course_name if test.course_id else None,
+                'test_type'     : test.test_type if test.test_type else None,
+                'invited'       :test_counts.get(test.test_id,0),
+                'test_end_time' :test.test_date_and_time.__add__(timedelta(minutes=int(test.test_duration)))
 
             })
             if datetime.strptime(str(test.test_date_and_time).split('+')[0].split('.')[0], "%Y-%m-%d %H:%M:%S") < datetime.now().__add__(timedelta(hours=5,minutes=30)):
@@ -172,10 +172,10 @@ def get_students_test_report(request,testID):
                     "college"       :Student.student_id.college,
                     "branch"        :Student.student_id.branch,
                     "category"      :Student.student_id.student_type,
-                    "max_marks"   :Student.assessment_max_score,
-                    "obtained_marks"  :Student.assessment_score_secured,
-                    "percentage"   :Student.assessment_score_secured/Student.assessment_max_score*100,
-                    "rank"         :Student.assessment_rank,
+                    "max_marks"     :Student.assessment_max_score,
+                    "obtained_marks":Student.assessment_score_secured,
+                    "percentage"    :Student.assessment_score_secured/Student.assessment_max_score*100,
+                    "rank"          :Student.assessment_rank,
                 })
             else:
              
