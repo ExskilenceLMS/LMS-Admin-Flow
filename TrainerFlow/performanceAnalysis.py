@@ -33,21 +33,23 @@ def performanceAnalysis(request):
             student_filters.update({'batch_id__batch_name':data.get('batch')})
         if data.get('subject','') != "":
             subject_filters.update({'subject_id__subject_name':data.get('subject')})
-        student = list(students_info.objects.filter(**student_filters,del_row=False
-                                                    ).annotate(full_name=Concat('student_firstname', Value(' '), 'student_lastname')
-                                                               ).values(
-            'student_id',
-            'full_name',
-            'student_type',
-            'college',
-            'branch',
-            'phone',
-            'student_score',
-            'student_catogory',
-            'student_college_rank',
-            'student_overall_rank',
-            'student_email',
-        ))
-        return JsonResponse({'message': student})
+        student = students_info.objects.filter(**student_filters,del_row=False)
+        response = []
+        [response.append({
+            'student_id':stud.student_id,    
+            'full_name':stud.student_firstname+" "+stud.student_lastname,
+            'student_type':stud.student_type,
+            'college':stud.college,
+            'branch':stud.branch,
+            'phone':stud.phone,
+            'student_score':stud.student_score,
+            'student_catogory': stud.student_catogory,
+            'student_college_rank':stud.student_college_rank,    
+            'student_overall_rank':stud.student_overall_rank,    
+            'student_email':stud.student_email
+                          }) for stud in student]   
+        # Student_details = students_details.objects.using('mongodb').filter(**student_filters,del_row=False)
+        # [data.update({'student_id':student_data.student_question_details}) for student_data in Student_details]
+        return JsonResponse({'message': 'student','data':response})
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)

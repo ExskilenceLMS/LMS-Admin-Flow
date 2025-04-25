@@ -45,14 +45,15 @@ def filter_for_Test_Report(request):
             'batches':[
                 batch.batch_name for batch in batchs
             ],
-            'LiveorCompleted':LiveorCompleted,
-            'Colleges':{
-                college.center_name:[
+            'liveorCompleted':LiveorCompleted,
+            'colleges':[ college.college_name for college in Colleges],
+            'branches':{
+                college.college_name:[
                         branch.branch for branch in branchs if branch.college_id.college_name == college.college_name
                                      ] for college in Colleges
             },
             'student_type':student_type,
-            'Test_type':Test_type
+            'test_type':Test_type
             
         }, status=200)
 
