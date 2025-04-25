@@ -1,7 +1,7 @@
 
 from django.urls import path
-from . import views, Test_Creation as t_create, Test_Assign as t_assign, Test_Report as t_report
-
+from . import views, Test_Creation as t_create, Test_Assign as t_assign, Test_Report as t_report , performanceAnalysis as t_analysis
+from . import Trainer_tickets as tickets
 urlpatterns = [
     path('login/<str:mail>/',views.trainer_Admin_Login,name="trainer_home"),
     # Test Creation
@@ -20,4 +20,13 @@ urlpatterns = [
     # Test Report
     path('filters/report/',t_report.filter_for_Test_Report,name="filters for report"),
     path('tests/report/',t_report.get_tests_Report_details,name="tests report"),
+    path('tests/report/<str:testID>/',t_report.get_students_test_report,name="tests report"),
+    # Performance Analysis
+    path('filters/analysis/',t_analysis.filter_for_performanceAnalysis,name="filters for analysis"),
+    path('analysis/',t_analysis.performanceAnalysis,name="performance analysis"),
+
+    # tickets
+    path('tickets/',tickets.fetch_all_tickets,name="tickets"),
+    path('tickets/<str:student_id>/',tickets.fetch_student_tickets,name="tickets"),
+    path('ticket/comments/',tickets.trainer_side_comments_for_tickets,name="ticket details"),
 ]

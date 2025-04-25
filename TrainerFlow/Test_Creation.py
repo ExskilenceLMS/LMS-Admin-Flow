@@ -25,10 +25,10 @@ def get_test_details(request,test_id):
     try:
         test = test_details.objects.get(test_id=test_id)
         return JsonResponse({
-                             'test': test.test_name,
-                             'description': test.test_description,
-                             'duration': test.test_duration,
-                             'marks': test.test_marks,})
+                             'test'         : test.test_name,
+                             'description'  : test.test_description,
+                             'duration'     : test.test_duration,
+                             'marks'        : test.test_marks,})
     except Exception as e:
          # print(e)
         return JsonResponse({"status": "error"})
@@ -79,18 +79,18 @@ def get_test_Questions(request):
                 cache.set(path,blob_data)
             level = blob_data.get('Level','') if blob_data.get('Level') else blob_data.get('level','')
             jsondata ={
-                             "qn_id": Qn,
-                             "qn_name": (blob_data.get('Name') +' in '+subject_list.get(Qn[1:3],'')) if blob_data.get('Name') else (sub_topics_list.get(Qn[1:15],'') + ' in '+subject_list.get(Qn[1:3],'')),
-                             "question_type": 'Coding' if Qn[-5] == 'c' else 'MCQ',
-                             "level": level,
-                             "question": blob_data.get('Qn') if blob_data.get('Qn') else blob_data.get('question'),
-                             "score": 0,
-                             "time": 0
+                             "qn_id"            : Qn,
+                             "qn_name"          : (blob_data.get('Name') +' in '+subject_list.get(Qn[1:3],'')) if blob_data.get('Name') else (sub_topics_list.get(Qn[1:15],'') + ' in '+subject_list.get(Qn[1:3],'')),
+                             "question_type"    : 'Coding' if Qn[-5] == 'c' else 'MCQ',
+                             "level"            : level,
+                             "question"         : blob_data.get('Qn') if blob_data.get('Qn') else blob_data.get('question'),
+                             "score"            : 0,
+                             "time"             : 0
                             }
             for rule in rules.get(type.lower(),[]):
                 if rule.get('level','').lower() == level.lower():
-                    jsondata.update({"score": rule.get('score'),
-                                           "time": rule.get('time')})            
+                    jsondata.update({"score"    : rule.get('score'),
+                                     "time"     : rule.get('time')})            
             Qn_data.append( (jsondata))
         container_client.close()
         return JsonResponse(Qn_data,safe=False)
@@ -104,8 +104,8 @@ def set_test_sections(request):
         try:
             test = test_details.objects.get(test_id=data.get('test_id'),del_row=False)
         except:
-            return JsonResponse({"status": "error",
-                                 "message": "Test not found"})
+            return JsonResponse({"status"   : "error",
+                                 "message"  : "Test not found"})
         Qns_list = []
         [Qns_list.extend(sec.get('qn_list',[])) for sec in data.get('sections')]
         Qns = questions.objects.filter(question_id__in=Qns_list,del_row=False)
@@ -132,8 +132,8 @@ def set_test_sections(request):
     except Exception as e:
         # print(e)
         if str(e).__contains__("Cannot insert duplicate key row in object"):
-            return JsonResponse({"status": "error",
-                                 "message": "Cannot insert duplicate key row in object"})
+            return JsonResponse({"status"   : "error",
+                                 "message"  : "Cannot insert duplicate key row in object"})
         return JsonResponse({"status": "error"})
 # def transfer_tags():
 #     try:

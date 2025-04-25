@@ -55,19 +55,19 @@ def get_tests_details(request):
             date_value = test.test_date_and_time if test.test_date_and_time else datetime.now().__add__(timedelta(hours=5,minutes=30,seconds=30))
             if datetime.strptime(str(date_value).split('+')[0].split('.')[0], "%Y-%m-%d %H:%M:%S") >= datetime.now().__add__(timedelta(hours=5,minutes=30))  :
                 test_data.append({
-                'test_id': test.test_id,
-                'title': test.test_name,
-                'description': test.test_description,
-                'duration': test.test_duration,
-                'marks': test.test_marks,
-                'subject': test.subject_id.subject_name if test.subject_id else None,
-                'date': test.test_date_and_time.date() if test.test_date_and_time else None,
-                'time': test.test_date_and_time.time()  if test.test_date_and_time else None,
-                'track': test.track_id.track_name if test.track_id else None,
-                'course': test.course_id.course_name if test.course_id else None,
-                'test_type': test.test_type if test.test_type else None,
-                'testing': str(datetime.strptime(str(date_value).split('+')[0].split('.')[0], "%Y-%m-%d %H:%M:%S")),
-                'NOW':str(datetime.now().__add__(timedelta(hours=5,minutes=30)))
+                'test_id'       : test.test_id,
+                'title'         : test.test_name,
+                'description'   : test.test_description,
+                'duration'      : test.test_duration,
+                'marks'         : test.test_marks,
+                'subject'       : test.subject_id.subject_name if test.subject_id else None,
+                'date'          : test.test_date_and_time.date() if test.test_date_and_time else None,
+                'time'          : test.test_date_and_time.time()  if test.test_date_and_time else None,
+                'track'         : test.track_id.track_name if test.track_id else None,
+                'course'        : test.course_id.course_name if test.course_id else None,
+                'test_type'     : test.test_type if test.test_type else None,
+                'testing'       : str(datetime.strptime(str(date_value).split('+')[0].split('.')[0], "%Y-%m-%d %H:%M:%S")),
+                'NOW'           : str(datetime.now().__add__(timedelta(hours=5,minutes=30)))
 
                 })
         return JsonResponse(test_data, safe=False)
@@ -96,8 +96,8 @@ def filter_for_sorting_students(request,track):
         batches = list(batch_model.objects.filter(course_id__tracks__contains=track,del_row=False))
 
         return JsonResponse({
-            'courses':[ course.course_name for course in courses],
-            'batches': {
+            'courses'       :[ course.course_name for course in courses],
+            'batches'       : {
                         course.course_name:[
                             batche.batch_name for batche in batches if batche.course_id.course_name == course.course_name
                                            ] for course in courses                   
@@ -113,9 +113,10 @@ def get_students(request,course,batch,testID):
                                         'student_id','student_firstname','student_lastname','student_type','college','branch'))
         assigned_students = list(students_assessments.objects.filter(test_id=testID,del_row=False).values('student_id'))
         response ={
-            'students':students,
-            'assigned_students_ids':[i.get('student_id') for i in assigned_students]
+            'students'                  :students,
+            'assigned_students_ids'     :[i.get('student_id') for i in assigned_students]
         }
+        # [stud for stud in students if stud.get('student_id') in [i.get('student_id') for i in assigned_students]]
         return JsonResponse(response,safe=False, status=200)
 
     except Exception as e:
@@ -148,7 +149,7 @@ def assign_tests(request):
                 subject_id = test.subject_id,
                 test_id = test,
                 course_id = test.course_id,
-                assessment_status ='P',
+                assessment_status ='Pending',
                 assessment_score_secured = 0,
                 assessment_max_score = test.test_marks
             )
