@@ -164,33 +164,33 @@ def get_students_test_report(request,testID):
         test_detaile = test_details.objects.get(test_id=testID,del_row=False)
         report = []
         for Student in Students_objs:
-            if datetime.strptime(str(Student.test_id.test_date_and_time).split('+')[0].split('.')[0], "%Y-%m-%d %H:%M:%S") < datetime.now().__add__(timedelta(hours=5,minutes=30)):
-               
-                report.append({
-                    "student_id"    : Student.student_id.student_id,
-                    "student_name"  :Student.student_id.student_firstname +Student.student_id.student_lastname,
-                    "college"       :Student.student_id.college,
-                    "branch"        :Student.student_id.branch,
-                    "category"      :Student.student_id.student_type,
-                    "max_marks"     :Student.assessment_max_score,
-                    "obtained_marks":Student.assessment_score_secured,
-                    "percentage"    :Student.assessment_score_secured/Student.assessment_max_score*100,
-                    "rank"          :Student.assessment_rank,
-                })
-            else:
-             
-                report.append({
-                    "student_id"    :Student.student_id.student_id,
-                    "student_name"  :Student.student_id.student_firstname +Student.student_id.student_lastname,
-                    "college"       :Student.student_id.college,
-                    "branch"        :Student.student_id.branch,
-                    "category"      :Student.student_id.student_type,
-                    "test_status"   :Student.assessment_status,
-                    "datetime"      :(date_formater(test_detaile.test_date_and_time)+' to '
-                                        +date_formater(test_detaile.test_date_and_time)
-                                        ) if Student.assessment_status != 'C' else (
-                                            date_formater(test_detaile.test_date_and_time)+' to '
-                                                    +date_formater(test_detaile.test_date_and_time.__add__(timedelta(minutes=int(test_detaile.test_duration)))))
+            if datetime.strptime(str(test_detaile.test_date_and_time).split('+')[0].split('.')[0], "%Y-%m-%d %H:%M:%S") < datetime.utcnow().__add__(timedelta(hours=5,minutes=30)):
+                if datetime.strptime(str(test_detaile.test_date_and_time).split('+')[0].split('.')[0], "%Y-%m-%d %H:%M:%S").__add__(timedelta(minutes=int(test_detaile.test_duration))) < datetime.utcnow().__add__(timedelta(hours=5,minutes=30)):
+                    report.append({
+                        "ID"            :Student.student_id.student_id,
+                        "Student"       :Student.student_id.student_firstname +Student.student_id.student_lastname,
+                        "College"       :Student.student_id.college,
+                        "Branch"        :Student.student_id.branch,
+                        "Category"      :Student.student_id.student_type,
+                        "Max_marks"     :Student.assessment_max_score,
+                        "Obtained_marks":Student.assessment_score_secured,
+                        "Percentage"    :Student.assessment_score_secured/Student.assessment_max_score*100,
+                        "Rank"          :Student.assessment_rank,
+                    })
+                else:
+                
+                    report.append({
+                        "ID"            :Student.student_id.student_id,
+                        "Student"       :Student.student_id.student_firstname +Student.student_id.student_lastname,
+                        "College"       :Student.student_id.college,
+                        "Branch"        :Student.student_id.branch,
+                        "Category"      :Student.student_id.student_type,
+                        "Test_status"   :Student.assessment_status,
+                        "Date_Time"      :(date_formater(test_detaile.test_date_and_time)+' to '
+                                            +date_formater(test_detaile.test_date_and_time)
+                                            ) if Student.assessment_status != 'C' else (
+                                                date_formater(test_detaile.test_date_and_time)+' to '
+                                                        +date_formater(test_detaile.test_date_and_time.__add__(timedelta(minutes=int(test_detaile.test_duration)))))
 
                 }) 
         response  = {
