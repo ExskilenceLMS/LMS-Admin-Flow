@@ -205,6 +205,8 @@ def get_students_test_report(request,testID):
             'duration'      :test_detaile.test_duration,
             "report"        :report
         }
+        if response.get('time_left') < 0:
+            response.pop('time_left')
         return JsonResponse(response,safe=False, status=200)
 
     except Exception as e:
