@@ -169,6 +169,7 @@ class students_info(models.Model):
     address = models.CharField(max_length=100,blank=True,null=True)
     phone = models.CharField(max_length=20)
     student_score = models.CharField(max_length=20, default=0)
+    student_total_score = models.CharField(max_length=20, default=0)
     student_catogory = models.CharField(max_length=20, choices=[("SUN", "SUN"), ("MOON", "MOON"), ("STAR", "STAR")],default="STAR")
     student_college_rank = models.IntegerField(default=-1)
     student_overall_rank = models.IntegerField(default=-1)
