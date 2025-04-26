@@ -199,6 +199,7 @@ def get_students_test_report(request,testID):
             'test_status'   :'Completed' if datetime.strptime(str(test_detaile.test_date_and_time.__add__(timedelta(minutes=int(test_detaile.test_duration)))).split('+')[0].split('.')[0], "%Y-%m-%d %H:%M:%S") < datetime.now().__add__(timedelta(hours=5,minutes=30)) else 'Live',
             'test_start_time':date_formater(test_detaile.test_date_and_time),
             'test_end_time' :date_formater(test_detaile.test_date_and_time.__add__(timedelta(minutes=int(test_detaile.test_duration)))),
+            'time_left'     :round((datetime.strptime(str(test_detaile.test_date_and_time.__add__(timedelta(minutes=int(test_detaile.test_duration)))).split('+')[0].split('.')[0], "%Y-%m-%d %H:%M:%S")-datetime.utcnow().__add__(timedelta(hours=5,minutes=30))).total_seconds()),
             'duration'      :test_detaile.test_duration,
             "report"        :report
         }

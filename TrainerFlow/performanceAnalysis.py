@@ -11,13 +11,19 @@ def filter_for_performanceAnalysis(request):
     try:
         Courses = courses.objects.filter(del_row=False)
         batch_list = batches.objects.filter(del_row=False)
+        subject_list = course_subjects.objects.filter(del_row=False)
         data = {
             'Courses'   :[ course.course_name for course in Courses],
             'batchs'    :{
                 course.course_name:[batch.batch_name for batch in batch_list if batch.course_id.course_name == course.course_name] for course in Courses
+            },
+            'subjects'  :{ 
+                course.course_name:{
+                    batch.batch_name:[subject.subject_id.subject_name for subject in subject_list if subject.course_id.course_name == batch.course_id.course_name] for batch in batch_list
+                } for course in Courses
             }
         }
-        return JsonResponse({'message': data})
+        return JsonResponse(data)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 @api_view(['POST'])
@@ -34,20 +40,20 @@ def performanceAnalysis(request):
         if data.get('subject','') != "":
             subject_filters.update({'subject_id__subject_name':data.get('subject')})
         student = students_info.objects.filter(**student_filters,del_row=False)
-        student_app_usage = student_app_usage
+        # student_app_usage = student_app_usage
         response = []
         [response.append({
-            'student_id'            :stud.student_id,    
-            'full_name'             :stud.student_firstname+" "+stud.student_lastname,
-            'student_type'          :stud.student_type,
-            'college'               :stud.college,
-            'branch'                :stud.branch,
-            'phone'                 :stud.phone,
-            'student_score'         :stud.student_score,
-            'student_catogory'      : stud.student_catogory,
-            'student_college_rank'  :stud.student_college_rank,    
-            'student_overall_rank'  :stud.student_overall_rank,    
-            'student_email'         :stud.student_email
+            'ID'            :stud.student_id,    
+            'Name'             :stud.student_firstname+" "+stud.student_lastname,
+            'Student_Type'          :stud.student_type,
+            'College'               :stud.college,
+            'Branch'                :stud.branch,
+            'Mobile'                 :stud.phone,
+            'Score'         :stud.student_score,
+            'Catogory'      :stud.student_catogory,
+            'College_Rank'  :stud.student_college_rank,    
+            'Overall_Rank'  :stud.student_overall_rank,    
+            'Email'         :stud.student_email
                           }) for stud in student]   
         Student_details = students_details.objects.using('mongodb').filter(**student_filters,del_row=False)
         [data.update({'student_id':student_data.student_question_details}) for student_data in Student_details]
