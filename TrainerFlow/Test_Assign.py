@@ -52,8 +52,8 @@ def get_tests_details(request):
         tests = test_details.objects.filter(**filters,del_row=False)
         test_data = []
         for test in tests:
-            date_value = test.test_date_and_time if test.test_date_and_time else datetime.now().__add__(timedelta(hours=5,minutes=30,seconds=30))
-            if datetime.strptime(str(date_value).split('+')[0].split('.')[0], "%Y-%m-%d %H:%M:%S") >= datetime.now().__add__(timedelta(hours=5,minutes=30))  :
+            date_value = test.test_date_and_time if test.test_date_and_time else datetime.utcnow().__add__(timedelta(hours=5,minutes=30,seconds=30))
+            if datetime.strptime(str(date_value).split('+')[0].split('.')[0], "%Y-%m-%d %H:%M:%S") >= datetime.utcnow().__add__(timedelta(hours=5,minutes=30))  :
                 test_data.append({
                 'test_id'       : test.test_id,
                 'title'         : test.test_name,
@@ -67,7 +67,7 @@ def get_tests_details(request):
                 'course'        : test.course_id.course_name if test.course_id else None,
                 'test_type'     : test.test_type if test.test_type else None,
                 'testing'       : str(datetime.strptime(str(date_value).split('+')[0].split('.')[0], "%Y-%m-%d %H:%M:%S")),
-                'NOW'           : str(datetime.now().__add__(timedelta(hours=5,minutes=30)))
+                'NOW'           : str(datetime.utcnow().__add__(timedelta(hours=5,minutes=30)))
 
                 })
         return JsonResponse(test_data, safe=False)
