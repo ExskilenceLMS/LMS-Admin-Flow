@@ -121,7 +121,7 @@ def get_tests_Report_details(request):
                 'test_end_time' :test.test_date_and_time.__add__(timedelta(minutes=int(test.test_duration)))
 
             })
-            if datetime.strptime(str(test.test_date_and_time).split('+')[0].split('.')[0], "%Y-%m-%d %H:%M:%S") < datetime.now().__add__(timedelta(hours=5,minutes=30)):
+            if datetime.strptime(str(test.test_date_and_time).split('+')[0].split('.')[0], "%Y-%m-%d %H:%M:%S") < datetime.utcnow().__add__(timedelta(hours=5,minutes=30)):
                 
                 # report =[]
                 # [report.append({
@@ -164,6 +164,8 @@ def get_students_test_report(request,testID):
         test_detaile = test_details.objects.get(test_id=testID,del_row=False)
         report = []
         for Student in Students_objs:
+            print(datetime.strptime(str(test_detaile.test_date_and_time).split('+')[0].split('.')[0], "%Y-%m-%d %H:%M:%S"))
+            print(datetime.utcnow().__add__(timedelta(hours=5,minutes=30)))
             if datetime.strptime(str(test_detaile.test_date_and_time).split('+')[0].split('.')[0], "%Y-%m-%d %H:%M:%S") < datetime.utcnow().__add__(timedelta(hours=5,minutes=30)):
                 if datetime.strptime(str(test_detaile.test_date_and_time).split('+')[0].split('.')[0], "%Y-%m-%d %H:%M:%S").__add__(timedelta(minutes=int(test_detaile.test_duration))) < datetime.utcnow().__add__(timedelta(hours=5,minutes=30)):
                     report.append({
@@ -196,7 +198,7 @@ def get_students_test_report(request,testID):
             "test_name"     :test_detaile.test_name,
             "course_name"   :test_detaile.course_id.course_name,
             "batch_name"    :Students_objs[0].student_id.batch_id.batch_name if len(Students_objs) > 0 else None,
-            'test_status'   :'Completed' if datetime.strptime(str(test_detaile.test_date_and_time.__add__(timedelta(minutes=int(test_detaile.test_duration)))).split('+')[0].split('.')[0], "%Y-%m-%d %H:%M:%S") < datetime.now().__add__(timedelta(hours=5,minutes=30)) else 'Live',
+            'test_status'   :'Completed' if datetime.strptime(str(test_detaile.test_date_and_time.__add__(timedelta(minutes=int(test_detaile.test_duration)))).split('+')[0].split('.')[0], "%Y-%m-%d %H:%M:%S") < datetime.utcnow().__add__(timedelta(hours=5,minutes=30)) else 'Live',
             'test_start_time':date_formater(test_detaile.test_date_and_time),
             'test_end_time' :date_formater(test_detaile.test_date_and_time.__add__(timedelta(minutes=int(test_detaile.test_duration)))),
             'time_left'     :round((datetime.strptime(str(test_detaile.test_date_and_time.__add__(timedelta(minutes=int(test_detaile.test_duration)))).split('+')[0].split('.')[0], "%Y-%m-%d %H:%M:%S")-datetime.utcnow().__add__(timedelta(hours=5,minutes=30))).total_seconds()),
