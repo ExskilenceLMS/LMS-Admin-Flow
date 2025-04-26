@@ -58,6 +58,7 @@ def performanceAnalysis(request):
             'Branch'        :stud.branch,
             'Mobile'        :stud.phone,
             'Score'         :str(stud.student_score)+'/'+str(stud.student_total_score),
+            'Score_%'       :str(int(stud.student_score)*100/int(stud.student_total_score))+'%' if int(stud.student_total_score) != 0 else '0' +'%',
             'Catogory'      :stud.student_catogory,
             'College_Rank'  :stud.student_college_rank,    
             'Overall_Rank'  :stud.student_overall_rank,    
