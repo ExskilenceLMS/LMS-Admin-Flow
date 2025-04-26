@@ -29,7 +29,7 @@ def filter_for_performanceAnalysis(request):
 def performanceAnalysis(request):
     try:
         data = json.loads(request.body)
-        data = {}
+        # data = {}
         student_filters = {}
         subject_filters = {} 
         if data.get('course','') != "":
@@ -62,10 +62,10 @@ def performanceAnalysis(request):
             'College_Rank'  :stud.student_college_rank,    
             'Overall_Rank'  :stud.student_overall_rank,    
             'Email'         :stud.student_email,
-            'No_of_hours'   :students_app_usage.get(stud.student_id)
+            'No_of_hours'   :students_app_usage.get(stud.student_id,0)
                           }) for stud in student]  , 
-        Student_details = students_details.objects.using('mongodb').filter(**student_filters,del_row=False)
-        [data.update({'student_id':student_data.student_question_details}) for student_data in Student_details]
-        return JsonResponse(response)
+        # Student_details = students_details.objects.using('mongodb').filter(**student_filters,del_row=False)
+        # [data.update({'student_id':student_data.student_question_details}) for student_data in Student_details]
+        return JsonResponse(response,safe=False,status=200)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
