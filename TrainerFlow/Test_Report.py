@@ -178,7 +178,6 @@ def get_students_test_report(request,testID):
                         "Rank"          :Student.assessment_rank,
                     })
                 else:
-                
                     report.append({
                         "ID"            :Student.student_id.student_id,
                         "Student"       :Student.student_id.student_firstname +Student.student_id.student_lastname,

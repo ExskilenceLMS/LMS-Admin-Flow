@@ -34,6 +34,7 @@ def performanceAnalysis(request):
         if data.get('subject','') != "":
             subject_filters.update({'subject_id__subject_name':data.get('subject')})
         student = students_info.objects.filter(**student_filters,del_row=False)
+        student_app_usage = student_app_usage
         response = []
         [response.append({
             'student_id'            :stud.student_id,    
