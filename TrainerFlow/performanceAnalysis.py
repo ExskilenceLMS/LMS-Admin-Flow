@@ -63,6 +63,7 @@ def performanceAnalysis(request):
             'College_Rank'  :stud.student_college_rank,    
             'Overall_Rank'  :stud.student_overall_rank,    
             'Email'         :stud.student_email,
+            'CGPA'          :stud.student_CGPA,
             'No_of_hours'   :students_app_usage.get(stud.student_id,0)
                           }) for stud in student]  , 
         # Student_details = students_details.objects.using('mongodb').filter(**student_filters,del_row=False)
