@@ -28,5 +28,8 @@ urlpatterns = [
     # tickets
     path('tickets/',tickets.fetch_all_tickets,name="tickets"),
     path('tickets/<str:student_id>/',tickets.fetch_student_tickets,name="tickets"),
-    path('ticket/comments/',tickets.trainer_side_comments_for_tickets,name="ticket details"),
+    path('resolve_ticket/<str:ticket_id>/',tickets.resolve_ticket,name="resolve_ticket"),
+    path('add_trainer_comment/',tickets.trainer_side_comments_for_tickets,name="add_trainer_comment"),
+
+
 ]

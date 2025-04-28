@@ -16,7 +16,7 @@ def login(request,mail):
         else:
             exists=False
             access=[]
-        return JsonResponse({'Type': user.category,'exists':exists,'access':access , 'Name': user.user_first_name+" "+user.user_last_name}, status=200)
+        return JsonResponse({'Type': user.category,'exists':exists,'access':access , 'Name': user.user_first_name+" "+user.user_last_name, 'Id': user.user_id}, status=200)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
     
