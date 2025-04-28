@@ -51,26 +51,42 @@ def get_tests_details(request):
 
         tests = test_details.objects.filter(**filters,del_row=False)
         test_data = []
+        not_assigned = []
         for test in tests:
             date_value = test.test_date_and_time if test.test_date_and_time else datetime.utcnow().__add__(timedelta(hours=5,minutes=30,seconds=30))
             if datetime.strptime(str(date_value).split('+')[0].split('.')[0], "%Y-%m-%d %H:%M:%S") >= datetime.utcnow().__add__(timedelta(hours=5,minutes=30))  :
-                test_data.append({
-                'test_id'       : test.test_id,
-                'title'         : test.test_name,
-                'description'   : test.test_description,
-                'duration'      : test.test_duration,
-                'marks'         : test.test_marks,
-                'subject'       : test.subject_id.subject_name if test.subject_id else None,
-                'date'          : test.test_date_and_time.date() if test.test_date_and_time else None,
-                'time'          : test.test_date_and_time.time()  if test.test_date_and_time else None,
-                'track'         : test.track_id.track_name if test.track_id else None,
-                'course'        : test.course_id.course_name if test.course_id else None,
-                'test_type'     : test.test_type if test.test_type else None,
-                'testing'       : str(datetime.strptime(str(date_value).split('+')[0].split('.')[0], "%Y-%m-%d %H:%M:%S")),
-                'NOW'           : str(datetime.utcnow().__add__(timedelta(hours=5,minutes=30)))
-
-                })
-        return JsonResponse(test_data, safe=False)
+                if test.test_date_and_time :
+                    test_data.append({
+                    'test_id'       : test.test_id,
+                    'title'         : test.test_name,
+                    'description'   : test.test_description,
+                    'duration'      : test.test_duration,
+                    'marks'         : test.test_marks,
+                    'subject'       : test.subject_id.subject_name if test.subject_id else None,
+                    'date'          : test.test_date_and_time.date() if test.test_date_and_time else None,
+                    'time'          : test.test_date_and_time.time()  if test.test_date_and_time else None,
+                    'track'         : test.track_id.track_name if test.track_id else None,
+                    'course'        : test.course_id.course_name if test.course_id else None,
+                    'test_type'     : test.test_type if test.test_type else None,
+                    'testing'       : str(datetime.strptime(str(date_value).split('+')[0].split('.')[0], "%Y-%m-%d %H:%M:%S")),
+                    })
+                else :
+                    not_assigned.append({
+                    'test_id'       : test.test_id,
+                    'title'         : test.test_name,
+                    'description'   : test.test_description,
+                    'duration'      : test.test_duration,
+                    'marks'         : test.test_marks,
+                    'subject'       : test.subject_id.subject_name if test.subject_id else None,
+                    'date'          : test.test_date_and_time.date() if test.test_date_and_time else None,
+                    'time'          : test.test_date_and_time.time()  if test.test_date_and_time else None,
+                    'track'         : test.track_id.track_name if test.track_id else None,
+                    'course'        : test.course_id.course_name if test.course_id else None,
+                    'test_type'     : test.test_type if test.test_type else None,
+                    'testing'       : str(datetime.strptime(str(date_value).split('+')[0].split('.')[0], "%Y-%m-%d %H:%M:%S")),
+                    })
+        not_assigned.extend(test_data)
+        return JsonResponse(not_assigned, safe=False)
     except Exception as e:
         print(e)
         return JsonResponse({"error": str(e)}, status=500)
@@ -151,7 +167,8 @@ def assign_tests(request):
                 course_id = test.course_id,
                 assessment_status ='Pending',
                 assessment_score_secured = 0,
-                assessment_max_score = test.test_marks
+                assessment_max_score = test.test_marks,
+                
             )
             std_obj.append(student_test)
         if data.get('students_list',[]) == []:

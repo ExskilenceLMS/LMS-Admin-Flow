@@ -233,6 +233,7 @@ class test_details(models.Model):
     level                   = models.CharField(max_length=20)
     tags                    = models.JSONField(default=list, blank=True)
     test_date_and_time      = models.DateTimeField(default=None, null=True)
+    test_created_date_time  = models.DateTimeField(default=None, null=True)
     del_row                 = models.BooleanField(default=False)
 
     def __str__(self):
@@ -283,6 +284,8 @@ class students_assessments(models.Model):
     assessment_completion_time  = models.DateTimeField(default=None, null=True)
     assessment_rank             = models.IntegerField(default=None, null=True)
     assessment_overall_rank     = models.IntegerField(default=None, null=True)
+    student_duration            = models.FloatField(default=0)
+    student_test_completion_time= models.DateTimeField(default=None, null=True)
     del_row                     = models.CharField(default='False',max_length=5)
 
     class Meta:
