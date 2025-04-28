@@ -306,7 +306,7 @@ class student_activities(models.Model):
 
 # 17 
 class student_app_usage(models.Model):
-    student_id              = models.CharField(max_length=20)
+    student_id              = models.ForeignKey(students_info,  on_delete=models.SET_NULL, null=True)
     logged_in               = models.DateTimeField()
     logged_out              = models.DateTimeField()
     del_row                 = models.BooleanField(default=False)
@@ -351,4 +351,19 @@ class suite_login_details(models.Model):
  
     class Meta:
         db_table = 'suite_login_details'
- 
+#21
+class student_test_questions_details(models.Model):
+    student_id                  = models.ForeignKey(students_info,  on_delete=models.SET_NULL, null=True)
+    subject_id                  = models.ForeignKey(subjects,  on_delete=models.SET_NULL, null=True)
+    question_type               = models.CharField(max_length=20)
+    test_id                     = models.ForeignKey(test_details, on_delete=models.SET_NULL, null=True)
+    score_secured               = models.FloatField(default=0)
+    question_status             = models.CharField(max_length=20,choices=[('Attempted','Attempted'),('Pending','Pending'),('Submitted','Submitted')])
+    max_score                   = models.FloatField(default=0)
+    week_number                 = models.IntegerField(default=0, null=True)
+    completion_time             = models.DateTimeField(default=None, null=True) 
+    question_id                 = models.ForeignKey(questions, on_delete=models.SET_NULL, null=True)
+    del_row                     = models.CharField(default='False',max_length=5)
+
+    class Meta:
+        db_table = 'student_test_questions_details'

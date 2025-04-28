@@ -48,7 +48,6 @@ def performanceAnalysis(request):
                     total_study_hours=Sum('duration')
                 ).order_by('student_id')
         students_app_usage = {stud.get('student_id'):stud.get('total_study_hours').total_seconds() for stud in students_app_usage}
-        print(students_app_usage)
         response = []
         [response.append({
             'ID'            :stud.student_id,    

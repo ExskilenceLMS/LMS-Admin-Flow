@@ -35,21 +35,21 @@ from djongo import models
 #     class Meta:
 #         db_table = 'practice_questions'
 
-class student_test_questions(models.Model):
-    student_id                  = models.CharField(max_length=20)
-    subject_id                  = models.CharField(max_length=20)
-    question_type               = models.CharField(max_length=20)
-    test_id                     = models.CharField(max_length=20)
-    score_secured               = models.FloatField(default=0)
-    question_status             = models.CharField(max_length=20,choices=[('Attempted','Attempted'),('Pending','Pending'),('Submitted','Submitted')])
-    max_score                   = models.FloatField(default=0)
-    week_number                 = models.IntegerField(default=0)
-    completion_time             = models.DateTimeField(default=None, null=True) 
-    question_id                 = models.CharField(max_length=20)
-    del_row                     = models.CharField(default='False',max_length=5)
+# class student_test_questions(models.Model):
+#     student_id                  = models.CharField(max_length=20)
+#     subject_id                  = models.CharField(max_length=20)
+#     question_type               = models.CharField(max_length=20)
+#     test_id                     = models.CharField(max_length=20)
+#     score_secured               = models.FloatField(default=0)
+#     question_status             = models.CharField(max_length=20,choices=[('Attempted','Attempted'),('Pending','Pending'),('Submitted','Submitted')])
+#     max_score                   = models.FloatField(default=0)
+#     week_number                 = models.IntegerField(default=0)
+#     completion_time             = models.DateTimeField(default=None, null=True) 
+#     question_id                 = models.CharField(max_length=20)
+#     del_row                     = models.CharField(default='False',max_length=5)
 
-    class Meta:
-        db_table = 'student_test_questions'
+#     class Meta:
+#         db_table = 'student_test_questions'
 # 3
 class live_sessions(models.Model):
 
