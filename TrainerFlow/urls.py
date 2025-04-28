@@ -6,6 +6,7 @@ urlpatterns = [
     path('login/<str:mail>/',views.trainer_Admin_Login,name="trainer_home"),
     # Test Creation
     path('tests/',t_create.test_creation,name="test_create"),
+    path('test/',t_create.test_update,name="test_Update"),
     path('filters/',views.get_filter_options,name="filters"),
     path('tests/get/<str:test_id>/',t_create.get_test_details,name="fetch tests"),
     path('tests/questions/',t_create.get_test_Questions,name="fetch questions"),

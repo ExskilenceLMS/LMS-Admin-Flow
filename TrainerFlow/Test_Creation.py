@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from django.http import JsonResponse
 from rest_framework.decorators import api_view
 import json
@@ -8,13 +9,30 @@ def test_creation(request):
     try:
         data = json.loads(request.body)
         test = test_details.objects.create(
-            test_id = 'Test'+str(len(test_details.objects.all())+1) ,#auto generated like test1, test2
+            test_id = 'Test'+str(int(test_details.objects.all().order_by('-test_id').first().test_id.replace('Test',''))+1) ,#auto generated like test1, test2
             test_name = data.get('test_name'),
             test_description = data.get('description'), 
             test_duration = data.get('duration'),
             test_marks = data.get('marks'),
-            test_created_by = data.get('created_by')
+            test_created_by = data.get('created_by'),
+            test_created_date_time = datetime.utcnow().__add__(timedelta(hours=5,minutes=30)),
         )
+        return JsonResponse({"status": "success",
+                             'test_id': test.test_id})
+    except Exception as e:
+        print(e)
+        return JsonResponse({"status": "error"})
+@api_view(['PUT'])
+def test_update(request):
+    try:
+        data = json.loads(request.body)
+        test = test_details.objects.get(test_id = data.get('test_id'),del_row = False)
+        test.test_name = data.get('test_name')          if data.get('test_name','') != '' else test.test_name
+        test.test_description = data.get('description') if data.get('description','') != '' else test.test_description
+        test.test_duration = data.get('duration')       if data.get('duration','') != '' else test.test_duration
+        test.test_marks = data.get('marks')             if data.get('marks','') != '' else test.test_marks
+        test.test_created_by = data.get('created_by')   if data.get('created_by','') != '' else test.test_created_by
+        test.save()
         return JsonResponse({"status": "success",
                              'test_id': test.test_id})
     except Exception as e:

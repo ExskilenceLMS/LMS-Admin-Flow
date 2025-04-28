@@ -49,7 +49,7 @@ def get_tests_details(request):
         if data.get('date','')!= "":
             filters.update({'test_date_and_time__date':data.get('date')})
 
-        tests = test_details.objects.filter(**filters,del_row=False)
+        tests = test_details.objects.filter(**filters,del_row=False).order_by('-test_created_date_time')
         test_data = []
         not_assigned = []
         for test in tests:
