@@ -142,8 +142,9 @@ def assign_tests(request):
     try:
         data = json.loads(request.body)
         test = test_details.objects.get(test_id = data.get('test_id'),del_row = False)
-        assigned_students = data.get('assigned_students_ids',[])
+        # assigned_students = data.get('assigned_students_ids',[])
         old_Std = students_assessments.objects.filter(test_id=test.test_id) 
+        assigned_students = [i.student_id.student_id for i in old_Std if i.del_row == False]
         all_stds =student_model.objects.filter(del_row=False)
         all_stds = {std.student_id:std for std in all_stds}
         del_std =[]

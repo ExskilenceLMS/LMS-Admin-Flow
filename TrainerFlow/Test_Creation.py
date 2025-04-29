@@ -21,7 +21,7 @@ def test_creation(request):
                              'test_id': test.test_id})
     except Exception as e:
         print(e)
-        return JsonResponse({"status": "error"})
+        return JsonResponse({"status": "error","message":str(e)})
 @api_view(['PUT'])
 def test_update(request):
     try:
@@ -37,7 +37,7 @@ def test_update(request):
                              'test_id': test.test_id})
     except Exception as e:
         print(e)
-        return JsonResponse({"status": "error"})
+        return JsonResponse({"status": "error","message":str(e)})
 @api_view(['GET'])  
 def get_test_details(request,test_id):
     try:
@@ -49,7 +49,7 @@ def get_test_details(request,test_id):
                              'marks'        : test.test_marks,})
     except Exception as e:
          # print(e)
-        return JsonResponse({"status": "error"})
+        return JsonResponse({"status": "error","message":str(e)})
 @api_view(['POST'])
 def get_test_Questions(request):
     try:
@@ -114,7 +114,7 @@ def get_test_Questions(request):
         return JsonResponse(Qn_data,safe=False)
     except Exception as e:
         # print(e)
-        return JsonResponse({"status": "error"})
+        return JsonResponse({"status": "error","message":str(e)})
 @api_view(['POST'])  
 def set_test_sections(request):
     try:
@@ -152,7 +152,7 @@ def set_test_sections(request):
         if str(e).__contains__("Cannot insert duplicate key row in object"):
             return JsonResponse({"status"   : "error",
                                  "message"  : "Cannot insert duplicate key row in object"})
-        return JsonResponse({"status": "error"})
+        return JsonResponse({"status": "error","message":str(e)})
 # def transfer_tags():
 #     try:
 #         QNs = questions.objects.all()
