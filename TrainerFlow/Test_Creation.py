@@ -61,7 +61,7 @@ def get_test_Questions(request):
         if data.get('subject','')!= "":
             filters.update({'sub_topic_id__topic_id__subject_id__subject_name':data.get('subject')})
         if data.get('topic','')!= "":
-            filters.update({'sub_topic_id__topic_id':data.get('topic')})
+            filters.update({'sub_topic_id__topic_name':data.get('topic')})
         if data.get('level','')!= "":
             filters.update({'level':data.get('level')})
         if data.get('tags','')!= "":
