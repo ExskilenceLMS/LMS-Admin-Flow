@@ -286,7 +286,7 @@ class students_assessments(models.Model):
     assessment_overall_rank     = models.IntegerField(default=None, null=True)
     student_duration            = models.FloatField(default=0)
     student_test_completion_time= models.DateTimeField(default=None, null=True)
-    del_row                     = models.CharField(default='False',max_length=5)
+    del_row                     = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'students_assessments'
@@ -363,7 +363,7 @@ class student_test_questions_details(models.Model):
     week_number                 = models.IntegerField(default=0, null=True)
     completion_time             = models.DateTimeField(default=None, null=True) 
     question_id                 = models.ForeignKey(questions, on_delete=models.SET_NULL, null=True)
-    del_row                     = models.CharField(default='False',max_length=5)
+    del_row                     = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'student_test_questions_details'
