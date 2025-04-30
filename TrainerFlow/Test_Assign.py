@@ -169,6 +169,7 @@ def assign_tests(request):
                 assessment_status ='Pending',
                 assessment_score_secured = 0,
                 assessment_max_score = test.test_marks,
+                assessment_completion_time = test.test_date_and_time.__add__(timedelta(minutes=int(test.test_duration))),
                 
             )
             std_obj.append(student_test)

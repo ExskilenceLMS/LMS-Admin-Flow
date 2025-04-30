@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from LMS_MSSQLdb_App.models import *
+from azure.core.exceptions import AzureError
 import json
 from rest_framework.decorators import api_view
 from django.http import HttpResponse, JsonResponse, HttpResponseNotFound
@@ -502,7 +503,11 @@ def content(request):
             'videos': {}
         }
         present_files = {}
+        present_videos={}
         file_count = 1
+        video_count = 1
+      
+
         for key in request.POST:
             if key.startswith('files[') and key.endswith('][text]'):
                 file_index = key.split('[')[1].split(']')[0]
@@ -537,6 +542,43 @@ def content(request):
                         'level': level,
                         'is_new': False
                     }
+            if key.startswith('videos[') and key.endswith('][text]'):
+                video_index = key.split('[')[1].split(']')[0]
+                video_key = f'videos[{video_index}][file]'
+                path_key = f'videos[{video_index}][path]'  
+                text = request.POST.get(f'videos[{video_index}][text]')
+                time = request.POST.get(f'videos[{video_index}][time]')
+                level = request.POST.get(f'videos[{video_index}][level]')
+                old_path = request.POST.get(path_key)  
+                if video_key in request.FILES:
+                    
+                    present_videos[video_index] = {
+                        'file': request.FILES[video_key],
+                        'text': text,
+                        'time': time,
+                        'level': level,
+                        'is_new': True,
+                        'old_path': old_path 
+                    }
+                    
+                
+                elif old_path:  
+                    present_videos[video_index] = {
+                        'path': old_path,
+                        'text': text,
+                        'time': time,
+                        'level': level,
+                        'is_new': False
+                    }
+                elif video_index in existing_content.get('videos', {}):
+                    
+                    present_videos[video_index] = {
+                        'path': existing_content['videos'][video_index]['path'],
+                        'text': text,
+                        'time': time,
+                        'level': level,
+                        'is_new': False
+                    }
         kept_assets = set()
         assets_to_delete = set()
         for original_index in sorted(present_files.keys()):
@@ -550,7 +592,11 @@ def content(request):
                     assets_to_delete.add(old_asset)
                 file_obj = file_entry['file']
                 file_extension = os.path.splitext(file_obj.name)[1]
-                asset_filename = f"{subtopic_id}{file_count:02}{file_extension}"
+                if file_count == 1:
+                    asset_filename = f"{subtopic_id}.pdf"
+                else:
+                    asset_filename = f"{subtopic_id}{file_count:02}.pdf"
+                # asset_filename = f"{subtopic_id}{file_count:02}{file_extension}"
                 asset_blob_name = asset_folder + asset_filename
                 asset_blob_client = container_client.get_blob_client(asset_blob_name)
                 file_path = f"https://{AZURE_ACCOUNT_NAME}.blob.core.windows.net/{AZURE_CONTAINER}/{asset_blob_name}"
@@ -589,6 +635,71 @@ def content(request):
                 }
 
             file_count += 1
+        for original_index in sorted(present_videos.keys()):
+            video_entry = present_videos[original_index]
+            new_video_key = f'video{video_count}'
+            if video_entry.get('is_new', False):
+                if video_entry.get('old_path'):
+                    old_videoname = video_entry['old_path'].split('/')[-1]
+                    old_asset = asset_folder + old_videoname
+                    assets_to_delete.add(old_asset)
+                video_obj = video_entry.get('file')
+                if not video_obj:
+                    print(f"[ERROR] No video file found in entry: {video_entry}")
+                    continue
+                if hasattr(video_obj, 'read'):
+                    print('[INFO] File-like object confirmed.')
+                else:
+                    print(f"[ERROR] 'file' is not a file-like object: {type(video_obj)}")
+                    continue
+                if video_count == 1:
+                    video_filename = f"{subtopic_id}.mp4"
+                else:
+                    video_filename = f"{subtopic_id}{video_count:02}.mp4"
+                video_blob_name = asset_folder + video_filename
+                video_path = f"https://{AZURE_ACCOUNT_NAME}.blob.core.windows.net/{AZURE_CONTAINER}/{video_blob_name}"
+
+                try:
+                    asset_blob_client = container_client.get_blob_client(video_blob_name)
+                    asset_blob_client.upload_blob(video_obj, overwrite=True, max_concurrency=2)
+                except Exception as e:
+                    print(f"[ERROR] Failed to upload blob: {str(e)}")
+                    continue
+
+                kept_assets.add(video_blob_name)
+                content_data['videos'][new_video_key] = {
+                    'path': video_path,
+                    'text': video_entry['text'],
+                    'time': video_entry['time'],
+                    'level': video_entry['level']
+                }
+            else:
+                old_path = video_entry['path']
+                old_filename = old_path.split('/')[-1]
+                new_filename = f"{subtopic_id}{video_count:02}{os.path.splitext(old_filename)[1]}"
+                new_blob_name = asset_folder + new_filename
+                new_path = f"https://{AZURE_ACCOUNT_NAME}.blob.core.windows.net/{AZURE_CONTAINER}/{new_blob_name}"
+
+                if old_filename != new_filename:
+                    try:
+                        old_blob_name = asset_folder + old_filename
+                        source_blob = container_client.get_blob_client(old_blob_name)
+                        target_blob = container_client.get_blob_client(new_blob_name)
+                        target_blob.start_copy_from_url(source_blob.url)
+                        assets_to_delete.add(old_blob_name)
+                    except Exception as e:
+                        print(f"[ERROR] Error renaming blob: {str(e)}")
+
+                kept_assets.add(new_blob_name)
+                content_data['videos'][new_video_key] = {
+                    'path': new_path,
+                    'text': video_entry['text'],
+                    'time': video_entry['time'],
+                    'level': video_entry['level']
+                }
+
+            video_count += 1
+
         temp_videos = []
         for key, value in request.POST.items():
             if key.startswith('videos[') and key.endswith('][path]'):
@@ -606,6 +717,9 @@ def content(request):
                     })
         for i, video in enumerate(temp_videos, 1):
             content_data['videos'][f'video{i}'] = video
+        
+
+        
         for asset_path in existing_assets:
             if asset_path not in kept_assets or asset_path in assets_to_delete:
                 try:
