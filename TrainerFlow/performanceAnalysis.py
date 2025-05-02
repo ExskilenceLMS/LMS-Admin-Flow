@@ -4,7 +4,7 @@ from LMS_MSSQLdb_App.models import *
 from LMS_Mongodb_App.models import *
 from rest_framework.decorators import api_view
 from django.db.models.functions import Concat
-from django.db.models import Sum, F,ExpressionWrapper, DurationField
+from django.db.models import Sum, F,ExpressionWrapper, DurationField,Avg
 @api_view(['GET'])
 def filter_for_performanceAnalysis(request):
     try:
@@ -47,7 +47,7 @@ def performanceAnalysis(request):
                 ).values('student_id').annotate(
                     total_study_hours=Sum('duration')
                 ).order_by('student_id')
-        students_app_usage = {stud.get('student_id'):stud.get('total_study_hours').total_seconds() for stud in students_app_usage}
+        students_app_usage = {stud.get('student_id'):stud.get('total_study_hours').total_seconds()/60 for stud in students_app_usage}
         response = []
         [response.append({
             'ID'            :stud.student_id,    
@@ -70,5 +70,15 @@ def performanceAnalysis(request):
         return JsonResponse(response,safe=False,status=200)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
-
-# def 
+@api_view(['GET'])
+def Student_performanceAnalysis(request,student_id):
+    try:
+        student_assingments = students_assessments.objects.filter(student_id=student_id,del_row=False).values('assessment_type','test_id','assessment_score_secured','assessment_status','assessment_max_score','assessment_week_number') \
+            .annotate(score=Sum('assessment_score_secured'))  
+        print(student_assingments)
+             
+        student_data = students_details.objects.using('mongodb').get(student_id=student_id,del_row=False).student_question_details
+        return JsonResponse(student_data,safe=False,status=200)
+    except Exception as e:
+        print(e)
+        return JsonResponse({'error': str(e)}, status=500)

@@ -25,6 +25,7 @@ urlpatterns = [
     # Performance Analysis
     path('filters/analysis/',t_analysis.filter_for_performanceAnalysis,name="filters for analysis"),
     path('analysis/',t_analysis.performanceAnalysis,name="performance analysis"),
+    path('analysis/<str:student_id>/',t_analysis.Student_performanceAnalysis,name="performance analysis"),
 
     # tickets
     path('tickets/',tickets.fetch_all_tickets,name="tickets"),
