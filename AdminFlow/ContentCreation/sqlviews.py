@@ -121,7 +121,7 @@ def save(request):
         return max(existing_numbers) + 1
 
     if content_type == 'coding':
-        query = data.get('Query')
+        query = data.get('Ans')
         table = data.get('Table')
         test_cases = data.get('TestCases')
         explanation = data.get('Expl')
@@ -149,7 +149,6 @@ def save(request):
                         'QNty': data.get('QNty'),
                         'QnTy': data.get('QnTy'),
                         'Qn': data.get('Qn'),
-                        'Query': data.get('Query'),
                         'Table': data.get('Table'),
                         'TestCases': data.get('TestCases'),
                         'ExpectedOutput': expected_output , 
@@ -206,7 +205,6 @@ def save(request):
                     'QNty': data.get('QNty'),
                     'QnTe': data.get('QnTe'),
                     'Qn': data.get('Qn'),
-                    'Query': data.get('Query'),
                     'Table': data.get('Table'),
                     'TestCases': data.get('TestCases'),
                     'ExpectedOutput': expected_output,
