@@ -137,11 +137,15 @@ DATABASES = {
     },
     'default': {
         'ENGINE': 'mssql',
-        'NAME': 'eussdb',
-        'USER': 'euserblr',#'eudev',#
-        'PASSWORD': '6han4Sy5#',#'Devlop99@#',#
-        'HOST': 'slnsgdhutmtbs.database.windows.net',
+        # 'NAME': 'eussdb',
+        # 'USER': 'euserblr',#'eudev',#
+        # 'PASSWORD': '6han4Sy5#',#'Devlop99@#',#
+        # 'HOST': 'slnsgdhutmtbs.database.windows.net',
        
+        'NAME': 'LMSdb',
+        'USER': 'sa',
+        'PASSWORD': 'sql2014!',
+        'HOST': 'localhost',
         # 'HOST': 'Rudresh\\SQLEXPRESS',
         'PORT': '1433',
         'OPTIONS': {

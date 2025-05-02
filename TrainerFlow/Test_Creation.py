@@ -7,9 +7,10 @@ from .Blobstorage import *
 @api_view(['POST'])
 def test_creation(request):
     try:
+        test_count = test_details.objects.all().order_by('-test_id').first()
         data = json.loads(request.body)
         test = test_details.objects.create(
-            test_id = 'Test'+str(int(test_details.objects.all().order_by('-test_id').first().test_id.replace('Test',''))+1) ,#auto generated like test1, test2
+            test_id = 'Test'+str(int(test_count.test_id.replace('Test',''))+1 if test_count!=None else 0+1) ,#auto generated like test1, test2
             test_name = data.get('test_name'),
             test_description = data.get('description'), 
             test_duration = data.get('duration'),
@@ -87,6 +88,7 @@ def get_test_Questions(request):
             Qn = Qn.get('question_id') 
             type = 'coding' if Qn[-5] == 'c' else 'mcq'
             path = f'subjects/{Qn[1:3]}/{Qn[1:-7]}/{Qn[1:-5]}/{type}/{Qn}.json'
+            print(path)
             cacheres = cache.get(path)
             if cacheres:
                 cache.set(path,cacheres)
