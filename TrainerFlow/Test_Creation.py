@@ -4,13 +4,17 @@ from rest_framework.decorators import api_view
 import json
 from LMS_MSSQLdb_App.models import *
 from .Blobstorage import *
+from django.db.models import IntegerField
+from django.db.models.functions import Substr, Cast
 @api_view(['POST'])
 def test_creation(request):
     try:
-        test_count = test_details.objects.all().order_by('-test_id').first()
+        test_count = test_details.objects.annotate(
+         test_number=Cast(Substr('test_id', 5), IntegerField())  # 'Test' is 4 characters
+                ).order_by('-test_number').first()
         data = json.loads(request.body)
         test = test_details.objects.create(
-            test_id = 'Test'+str(int(test_count.test_id.replace('Test',''))+1 if test_count!=None else 0+1) ,#auto generated like test1, test2
+            test_id = 'Test'+str( test_count.test_number+1 if test_count.test_number!=None else 0+1) ,#auto generated like test1, test2
             test_name = data.get('test_name'),
             test_description = data.get('description'), 
             test_duration = data.get('duration'),
