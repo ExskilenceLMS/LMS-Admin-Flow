@@ -645,7 +645,7 @@ def content(request):
                     assets_to_delete.add(old_asset)
                 video_obj = video_entry.get('file')
                 if not video_obj:
-                    print(f"[ERROR] No video file found in entry: {video_entry}")
+                    print(f"[ERROR] No video file found in entry: {video_entry}") 
                     continue
                 if hasattr(video_obj, 'read'):
                     print('[INFO] File-like object confirmed.')
