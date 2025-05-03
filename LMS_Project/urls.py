@@ -31,7 +31,7 @@ from AdminFlow import collegeBranch as college_branch_views
 from AdminFlow import livesessions as livesessions_views
 from AdminFlow.ContentCreation import sqlviews as sql_views
 from AdminFlow.ContentCreation import contentCreation as content_creation_views, mcqBulkUpload as mcqBulkUpload_views
-
+from AdminFlow import daywise as daywise_views
 from AdminFlow import batchstatus as batchstatus_views 
 urlpatterns = [
     path('api/trainer/', include('TrainerFlow.urls')),
@@ -109,6 +109,10 @@ urlpatterns = [
     path('Content_creation/get_all_data_of_course/',subject_plan_views.get_all_data_of_course,name='get_all_data_of_course'),
     path('Content_creation/save_daywise/',subject_plan_views.save_daywise,name='save_daywise'),
     path('add_day_to_table/',subject_plan_views.add_day_to_table,name="add_day_to_table"),
+
+    path('is_batch_in_blob/<str:course>/<str:batch>/',daywise_views.is_batch_in_blob,name="is_batch_in_blob"),
+    path('get_batch_daywise_json/<str:course>/<str:batch>/',daywise_views.get_batch_daywise_json,name="get_batch_daywise_json"),
+
 
 
     path('Content_creation/dashboard-data/',content_creation_views.dashboard_data,name='dashboard_data'),

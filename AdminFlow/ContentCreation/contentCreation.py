@@ -593,9 +593,9 @@ def content(request):
                 file_obj = file_entry['file']
                 file_extension = os.path.splitext(file_obj.name)[1]
                 if file_count == 1:
-                    asset_filename = f"{subtopic_id}.pdf"
+                    asset_filename = f"{subtopic_id}{file_extension}"
                 else:
-                    asset_filename = f"{subtopic_id}{file_count:02}.pdf"
+                    asset_filename = f"{subtopic_id}{file_count:02}{file_extension}"
                 # asset_filename = f"{subtopic_id}{file_count:02}{file_extension}"
                 asset_blob_name = asset_folder + asset_filename
                 asset_blob_client = container_client.get_blob_client(asset_blob_name)
@@ -645,7 +645,7 @@ def content(request):
                     assets_to_delete.add(old_asset)
                 video_obj = video_entry.get('file')
                 if not video_obj:
-                    print(f"[ERROR] No video file found in entry: {video_entry}")
+                    print(f"[ERROR] No video file found in entry: {video_entry}") 
                     continue
                 if hasattr(video_obj, 'read'):
                     print('[INFO] File-like object confirmed.')
@@ -653,9 +653,9 @@ def content(request):
                     print(f"[ERROR] 'file' is not a file-like object: {type(video_obj)}")
                     continue
                 if video_count == 1:
-                    video_filename = f"{subtopic_id}.mp4"
+                    video_filename = f"{subtopic_id}{file_extension}"
                 else:
-                    video_filename = f"{subtopic_id}{video_count:02}.mp4"
+                    video_filename = f"{subtopic_id}{video_count:02}{file_extension}"
                 video_blob_name = asset_folder + video_filename
                 video_path = f"https://{AZURE_ACCOUNT_NAME}.blob.core.windows.net/{AZURE_CONTAINER}/{video_blob_name}"
 
