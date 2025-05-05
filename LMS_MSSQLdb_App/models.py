@@ -123,6 +123,9 @@ class batches(models.Model):
     max_no_of_students      = models.IntegerField()
     start_date              = models.DateTimeField()
     indicative_date         = models.DateTimeField()
+    saturday_holiday        = models.BooleanField(default=None)
+    sunday_holiday          = models.BooleanField(default=None)
+    hours_per_day           = models.IntegerField(default=0)
     del_row                 = models.BooleanField(default=False)
 
     def __str__(self):

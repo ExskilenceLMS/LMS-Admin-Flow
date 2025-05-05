@@ -41,6 +41,9 @@ def create_batch(request):
                     batch_name=data['batch_name'],
                     delivery_type=data['delivery_type'],
                     max_no_of_students=data['max_no_of_students'],
+                    saturday_holiday=False,
+                    sunday_holiday=False,
+                    hours_per_day=0,
                     start_date=data['start_date'],
                     indicative_date=data['indicative_date']
                 )
