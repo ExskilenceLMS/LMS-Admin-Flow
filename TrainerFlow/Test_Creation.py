@@ -14,7 +14,7 @@ def test_creation(request):
                 ).order_by('-test_number').first()
         data = json.loads(request.body)
         test = test_details.objects.create(
-            test_id = 'Test'+str( test_count.test_number+1 if test_count.test_number!=None else 0+1) ,#auto generated like test1, test2
+            test_id = 'Test'+str( test_count.test_number+1 if test_count !=None else 0+1) ,#auto generated like test1, test2
             test_name = data.get('test_name'),
             test_description = data.get('description'), 
             test_duration = data.get('duration'),

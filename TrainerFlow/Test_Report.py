@@ -90,7 +90,7 @@ def get_tests_Report_details(request):
         if data.get('branch','') != "":
             students_assessments_filters.update({'student_id__branch':data.get('branch')})
 
-        tests = test_details.objects.filter(**test_details_filters,test_date_and_time__lte=datetime.utcnow().__add__(timedelta(hours=5,minutes=30)),del_row=False)
+        tests = test_details.objects.filter(**test_details_filters,test_date_and_time__lte=datetime.utcnow().__add__(timedelta(hours=5,minutes=30)),del_row=False).order_by('-test_date_and_time')
         test_ids = [test.test_id for test in tests]
         Invited = students_assessments.objects.filter( **students_assessments_filters,test_id__in=test_ids,del_row=False)
         test_counts ={}
