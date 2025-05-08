@@ -53,7 +53,7 @@ def filter_for_Test_Report(request):
                                      ] for college in Colleges
             },
             'student_type'  :student_type,
-            'test_type'     :Test_type
+            'test_type'     :[i for i in Test_type if i != '']
             
         }, status=200)
 
