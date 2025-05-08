@@ -30,7 +30,7 @@ def get_all_students(request):
                 "student_address": student.address,
                 "student_pincode": student.student_pincode,
                 "student_phone": student.phone,
-                "student_altphone": student.student_alt_phone,
+                "student_alt_phone": student.student_alt_phone,
                 "student_isActive": student.isActive,
                 "student_qualification": student.student_qualification,
                 "student_type": student.student_type,
@@ -67,10 +67,10 @@ def get_students_of_batch(request):
                     "student_state": student.student_state,
                     "student_city": student.student_city,
                     "student_dob": student.student_dob,
-                    "student_address": student.address,
+                    "address": student.address,
                     "student_pincode": student.student_pincode,
                     "phone": student.phone,
-                    "student_altphone": student.student_alt_phone,
+                    "student_alt_phone": student.student_alt_phone,
                     "isActive": student.isActive,
                     "student_qualification": student.student_qualification,
                     "student_type": student.student_type,
@@ -161,7 +161,7 @@ def create_student(request):
                     student.student_city = data.get("student_city", student.student_city)
                     student.student_gender = data.get("student_gender", student.student_gender)
                     student.student_pincode = data.get("student_pincode", student.student_pincode)
-                    student.student_alt_phone = data.get("student_altphone", student.student_alt_phone)
+                    student.student_alt_phone = data.get("student_alt_phone", student.student_alt_phone)
                     student.isActive = data.get("isActive", student.isActive)
                     student.student_dob = dob
                     student.student_qualification = data.get("student_qualification", student.student_qualification)
@@ -197,7 +197,7 @@ def create_student(request):
                     student_city=data.get("student_city", None),
                     student_gender=data.get("student_gender", None),
                     student_pincode=data.get("student_pincode", None),
-                    student_alt_phone=data.get("student_altphone", None),
+                    student_alt_phone=data.get("student_alt_phone", None),
                     isActive=data.get("isActive", None),
                     student_dob=dob,
                     student_qualification=data.get("student_qualification", None),
