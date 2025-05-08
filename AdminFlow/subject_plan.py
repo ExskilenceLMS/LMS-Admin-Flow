@@ -60,7 +60,7 @@ def get_all_course_tracks_and_subjects(request):
 def topics_by_subject(request,subject_id):
     try:
         subject = subjects.objects.get(subject_id=subject_id)
-        topics_list = topics.objects.filter(subject_id=subject)
+        topics_list = topics.objects.filter(subject_id=subject,del_row=False)
         topic_data = []
         for topic in topics_list:
             topic_data.append({
@@ -76,7 +76,7 @@ def topics_by_subject(request,subject_id):
 def get_all_subtopics_data(request, topic_id):
     try:
         topic=topics.objects.get(topic_id=topic_id)
-        subtopics_ls = sub_topics.objects.filter(topic_id=topic).values(
+        subtopics_ls = sub_topics.objects.filter(topic_id=topic,del_row=False).values(
             'sub_topic_id', 
             'sub_topic_name', 
             'notes', 
