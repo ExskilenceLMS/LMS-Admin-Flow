@@ -113,7 +113,7 @@ def get_tests_Report_details(request):
                 'subject'       : test.subject_id.subject_name if test.subject_id else None,
                 'date'          : test.test_date_and_time.date() if test.test_date_and_time else None,
                 'from_time'     : str(test.test_date_and_time.strftime('%I:%M %p')) if test.test_date_and_time else None,
-                'end_time'      : str(test.test_date_and_time.__add__(timedelta(minutes=int(test.test_duration))).strftime('%I:%M %p'))  if test.test_date_and_time else None,
+                'end_time'      : str(test.test_date_and_time.__add__(timedelta(minutes=float(test.test_duration))).strftime('%I:%M %p'))  if test.test_date_and_time else None,
                 'track'         : test.track_id.track_name if test.track_id else None,
                 'course'        : test.course_id.course_name if test.course_id else None,
                 'test_type'     : test.test_type if test.test_type else None,
