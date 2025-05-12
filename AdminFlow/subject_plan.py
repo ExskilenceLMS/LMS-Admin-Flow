@@ -386,18 +386,19 @@ def save_daywise(request):
                 else:
                     end_date = start_date.replace(hour=23, minute=59, second=59)
                 subject = subjects.objects.filter(subject_name=key, del_row=False).first() 
-            if not (course_subjects.objects.filter(subject_id=subject,course_id=actual_course_id,del_row=False).exists()):
+            if not (course_subjects.objects.filter(subject_id=subject,batch_id=batches.objects.get(batch_id=batch_id),course_id=actual_course_id,del_row=False).exists()):
                 course_subjects.objects.create(subject_id=subject,
                                                 course_id=actual_course_id,
                                                 start_date=start_date_value,
                                                 end_date=end_date,
                                                 duration_in_days=(end_date-start_date_value).days,
                                                 is_mandatory=True,
+                                                batch_id=batches.objects.get(batch_id=batch_id),
                                                 path="https://images.unsplash.com/photo-1515879218367-8466d910aaa4?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                                                 )
                 
             else:
-                exist_object=course_subjects.objects.filter(subject_id=subject,course_id=actual_course_id,del_row=False).first()
+                exist_object=course_subjects.objects.filter(subject_id=subject,course_id=actual_course_id,batch_id=batches.objects.get(batch_id=batch_id),del_row=False).first()
                 exist_object.start_date=start_date_value
                 exist_object.end_date=end_date
                 exist_object.duration_in_days=(end_date-start_date_value).days
