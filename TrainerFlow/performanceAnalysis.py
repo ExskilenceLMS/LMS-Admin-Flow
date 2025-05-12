@@ -47,7 +47,7 @@ def performanceAnalysis(request):
                 ).values('student_id').annotate(
                     total_study_hours=Sum('duration')
                 ).order_by('student_id')
-        print(students_app_usage)
+        # print(students_app_usage)
         students_app_usage = {stud.get('student_id'):stud.get('total_study_hours').total_seconds()/60 for stud in students_app_usage}
         response = []
         [response.append({
@@ -58,7 +58,7 @@ def performanceAnalysis(request):
             'Branch'        :stud.branch,
             'Mobile'        :stud.phone,
             'Score'         :str(stud.student_score)+'/'+str(stud.student_total_score),
-            'Score_%'       :str(int(stud.student_score)*100/int(stud.student_total_score))+'%' if int(stud.student_total_score) != 0 else '0' +'%',
+            'Score_%'       :str(round(int(stud.student_score)*100/int(stud.student_total_score),2))+'%' if int(stud.student_total_score) != 0 else '0' +'%',
             'Catogory'      :stud.student_catogory,
             'College_Rank'  :stud.student_college_rank,    
             'Overall_Rank'  :stud.student_overall_rank,    
@@ -74,12 +74,13 @@ def performanceAnalysis(request):
 @api_view(['GET'])
 def Student_performanceAnalysis(request,student_id):
     try:
-        student_assingments = students_assessments.objects.filter(student_id=student_id,del_row=False).values('assessment_type','test_id','assessment_score_secured','assessment_status','assessment_max_score','assessment_week_number') \
+        student_assingments = students_assessments.objects.filter(student_id=student_id,del_row=False)\
+            .values('assessment_type','test_id','assessment_score_secured','assessment_status','assessment_max_score','assessment_week_number') \
             .annotate(score=Sum('assessment_score_secured'))  
-        print(student_assingments)
+        # print(student_assingments)
              
         student_data = students_details.objects.using('mongodb').get(student_id=student_id,del_row=False).student_question_details
         return JsonResponse(student_data,safe=False,status=200)
     except Exception as e:
-        print(e)
+        # print(e)
         return JsonResponse({'error': str(e)}, status=500)

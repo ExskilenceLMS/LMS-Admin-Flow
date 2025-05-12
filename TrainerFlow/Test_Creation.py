@@ -55,12 +55,13 @@ def get_test_details(request,test_id):
     except Exception as e:
          # print(e)
         return JsonResponse({"status": "error","message":str(e)})
+QNDATA =[]
 @api_view(['POST'])
 def get_test_Questions(request):
     try:
         data = json.loads(request.body)
         filters = {}
-
+        global QNDATA
         if data.get('track','') != "":
             filters.update({'sub_topic_id__topic_id__subject_id__track_id__track_name':data.get('track')})
         if data.get('subject','')!= "":
@@ -77,7 +78,8 @@ def get_test_Questions(request):
         #     filters.update({'test_duration':data.get('duration')})
         # if data.get('date')!= "":
         #     filters.update({'test_date_and_time__date':data.get('date')})
-
+        if filters == {} and QNDATA != []:
+            return JsonResponse(QNDATA,safe=False)
         Qns = questions.objects.filter(**filters,del_row=False).values('question_id',
             'question_type', 
             'level',
@@ -92,7 +94,7 @@ def get_test_Questions(request):
             Qn = Qn.get('question_id') 
             type = 'coding' if Qn[-5] == 'c' else 'mcq'
             path = f'subjects/{Qn[1:3]}/{Qn[1:-7]}/{Qn[1:-5]}/{type}/{Qn}.json'
-            print(path)
+            # print(path)
             cacheres = cache.get(path)
             if cacheres:
                 cache.set(path,cacheres)
@@ -116,6 +118,8 @@ def get_test_Questions(request):
                     jsondata.update({"score"    : rule.get('score'),
                                      "time"     : rule.get('time')})            
             Qn_data.append( (jsondata))
+        if filters == {}:
+            QNDATA = Qn_data
         container_client.close()
         return JsonResponse(Qn_data,safe=False)
     except Exception as e:
