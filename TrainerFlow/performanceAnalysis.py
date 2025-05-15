@@ -181,7 +181,8 @@ def Student_performanceAnalysis(request,student_id):
 
                     })
                 weekly_test_data = assessments.get(i+'_'+j.split('_')[1],{})
-                delay = weekly_test_data.get('student_test_completion_time') if weekly_test_data.get('student_test_completion_time') != None else timezone.now().__add__(timedelta(days=7)) - (weekly_test_data.get('assessment_completion_time') if weekly_test_data.get('assessment_completion_time') != None else timezone.now().__add__(timedelta(days=7)))
+                delay = (weekly_test_data.get('student_test_completion_time') if weekly_test_data.get('student_test_completion_time') != None else timezone.now().__add__(timedelta(hours=5,minutes=30))) - \
+                    (weekly_test_data.get('assessment_completion_time') if weekly_test_data.get('assessment_completion_time') != None else timezone.now().__add__(timedelta(days=0, hours=5, minutes=30)))
                 delay = delay.days
                 response.get('weeks').get(i).get(j).update({
                     'delay':delay if delay > 0 and delay <=3 else 3 if delay > 3 else 0,
