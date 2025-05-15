@@ -181,12 +181,13 @@ def Student_performanceAnalysis(request,student_id):
 
                     })
                 weekly_test_data = assessments.get(i+'_'+j.split('_')[1],{})
-                delay = weekly_test_data.get('student_test_completion_time') if weekly_test_data.get('student_test_completion_time') != None else timezone.now().__add__(timedelta(days=7)) - weekly_test_data.get('assessment_completion_time')
+                delay = weekly_test_data.get('student_test_completion_time') if weekly_test_data.get('student_test_completion_time') != None else timezone.now().__add__(timedelta(days=7)) - (weekly_test_data.get('assessment_completion_time') if weekly_test_data.get('assessment_completion_time') != None else timezone.now().__add__(timedelta(days=7)))
                 delay = delay.days
                 response.get('weeks').get(i).get(j).update({
                     'delay':delay if delay > 0 and delay <=3 else 3 if delay > 3 else 0,
                     'weekly_test_score': str(weekly_test_data.get('assessment_score_secured','0'))+"/"+str(weekly_test_data.get('assessment_max_score','0')),
-                    'weekly_test_percentage': round(weekly_test_data.get('assessment_score_secured','0')/weekly_test_data.get('assessment_max_score','0')*100,2),
+                    'weekly_test_percentage': (round(weekly_test_data.get('assessment_score_secured',0)/weekly_test_data.get('assessment_max_score',0)*100,2))\
+                        if weekly_test_data.get('assessment_max_score',0) != 0 else 0
                      
                 })
                 overall_percentage = (response.get('weeks').get(i).get(j).get('practice_mcq_percentage') + \
@@ -198,7 +199,7 @@ def Student_performanceAnalysis(request,student_id):
                 weekly_test_max = float(response.get('cumulative').get(i).get('weekly_test','0/0').split('/')[1]) +float(weekly_test_data.get('assessment_max_score','0'))
                 response.get('cumulative').get(i).update({
                     'weekly_test_score': str(weekly_test_secured)+"/"+str(weekly_test_max),
-                    'weekly_test_percentage':round( weekly_test_secured/weekly_test_max*100,2),
+                    'weekly_test_percentage':(round( weekly_test_secured/weekly_test_max*100,2)) if weekly_test_max != 0 else 0,
                     'delays':response.get('cumulative').get(i).get('delays') + (delay if delay > 0 and delay <=3 else 3 if delay > 3 else 0),
                     
                 })
