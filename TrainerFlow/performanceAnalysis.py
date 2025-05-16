@@ -54,6 +54,10 @@ def performanceAnalysis(request):
                     total_study_hours=Sum('duration')
                 ).order_by('student_id')
         # print(students_app_usage)
+        subject_list_obj = list(course_subjects.objects.filter( del_row=False).values('subject_id__subject_name','course_id__course_name'))
+        subject_list = {subj.get('course_id__course_name'):[] for subj in subject_list_obj}
+        [subject_list.get(subj.get('course_id__course_name')).append(subj.get('subject_id__subject_name')) for subj in subject_list_obj \
+            if subj.get('subject_id__subject_name') not in subject_list.get(subj.get('course_id__course_name'))]
         students_app_usage = {stud.get('student_id'):stud.get('total_study_hours').total_seconds()/3600 for stud in students_app_usage}
         response = []
         [response.append({
@@ -73,6 +77,7 @@ def performanceAnalysis(request):
             'No_of_hours'   :round(students_app_usage.get(stud.student_id,0),2),
             'Course'        :stud.course_id.course_name,
             'Batch'         :stud.batch_id.batch_name,
+            'Subject'       :subject_list.get(stud.course_id.course_name),
                           }) for stud in student if not stud.student_id[3:].startswith('ABC')]  , 
         # Student_details = students_details.objects.using('mongodb').filter(**student_filters,del_row=False)
         # [data.update({'student_id':student_data.student_question_details}) for student_data in Student_details]
