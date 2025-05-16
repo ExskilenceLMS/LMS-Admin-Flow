@@ -181,7 +181,7 @@ def get_students_test_report(request,testID):
                         "Category"      :Student.student_id.student_type,
                         "Max_marks"     :Student.assessment_max_score,
                         "Obtained_marks":Student.assessment_score_secured,
-                        "Percentage"    :Student.assessment_score_secured/Student.assessment_max_score*100,
+                        "Percentage"    :round(Student.assessment_score_secured/Student.assessment_max_score*100,2),
                         "Rank"          :Student.assessment_rank,
                     })
                 else:
