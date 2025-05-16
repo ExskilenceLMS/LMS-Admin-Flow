@@ -3,9 +3,14 @@ import json
 from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from LMS_MSSQLdb_App.models import tracks as track_model,subjects as subject_model,topics as topic_model,suite_login_details,test_details,courses as course_model,batches as batch_model
-from LMS_MSSQLdb_App.models import students_info as student_model,students_assessments 
+from LMS_MSSQLdb_App.models import students_info as student_model,students_assessments
+from LMS_Mongodb_App.models import *
 from django.db.models import Count
 from LMS_MSSQLdb_App.models import *
+from django.core.cache import cache
+import calendar
+from .Blobstorage import *
+
 @api_view(['GET'])
 def filter_for_Test_Report(request):
     try:
@@ -214,3 +219,160 @@ def get_students_test_report(request,testID):
 
 def date_formater(date_time):
     return str(date_time.day)+'-'+str(date_time.month)+'-'+str(date_time.year)[-2:]+' '+str(date_time.strftime('%I:%M %p'))
+
+def format_time_with_zone(date):
+    if date == None:
+        return None
+    date = datetime.strptime(str(date).split('.')[0].split('+')[0], "%Y-%m-%d %H:%M:%S")
+    return (f"{calendar.month_abbr[int(date.strftime("%m"))]} {int(date.strftime("%d"))} {date.strftime('%Y')} {date.strftime('%H:%M:%S')} IST")
+
+@api_view(['GET'])
+def student_test_report(request,student_id,test_id):
+    try: 
+        student_assessment = students_assessments.objects.get(student_id = student_id,test_id = test_id,del_row = False)
+        test_questions_list = list(test_sections.objects.filter(test_id = test_id,del_row = False))
+        test_questions = [i.question_id.question_id for i in test_questions_list]
+        # print(test_questions)
+        answers_status = student_test_questions_details.objects.filter(student_id = student_id,test_id = test_id,question_id__in = test_questions,del_row = False).values('question_id','score_secured','max_score','question_status')
+        coding_answers = student_practice_coding_answers.objects.using('mongodb').filter(student_id = student_id,question_id__in = test_questions,question_done_at = test_id,del_row = False).values('question_id','score','entered_ans','testcase_results')
+        mcq_answers = student_practiceMCQ_answers.objects.using('mongodb').filter(student_id = student_id,question_id__in = test_questions,question_done_at = test_id,del_row = False).values('question_id','score','entered_ans')
+        coding_answers = {i.get('question_id'):i for i in coding_answers}#{i.question_id:i for i in coding_answers}
+        mcq_answers = { i.get('question_id'):i for i in mcq_answers}#{i.question_id:i for i in mcq_answers}
+        topics_list ={i.question_id.question_id:i.question_id.sub_topic_id.topic_id.topic_name for i in test_questions_list}
+        # print(topics_list)
+        test_time_taken = round(student_assessment.student_duration/60) 
+        Total_time_given = round((student_assessment.assessment_completion_time-student_assessment.test_id.test_date_and_time).total_seconds()/60)\
+                            if student_assessment.assessment_type != 'Weekly Test' else float(student_assessment.test_id.test_duration)
+        test_summary ={}
+        test_summary.update({
+            # 'time_taken_for_completion':round((student_assessment.student_test_start_time - student_assessment.student_test_completion_time ).total_seconds()/60,2),
+            'time_taken_for_completion':str(test_time_taken)+' min' if test_time_taken < 60 else str(int(test_time_taken/60))+' hrs '+str(test_time_taken%60)+' min',
+            'total_time'            :str(Total_time_given)+' min' if Total_time_given < 60 else str(int(Total_time_given/60))+' hrs '+str(Total_time_given%60)+' min',
+            'score_secured'         :student_assessment.assessment_score_secured,
+            'max_score'             :student_assessment.assessment_max_score,
+            'percentage'            :round((student_assessment.assessment_score_secured/student_assessment.assessment_max_score)*100,2),
+            'status'                :student_assessment.assessment_status,
+            'attempted_questions'   :len(answers_status),
+            'total_questions'       :len(test_questions),
+            'test_start_time'       :format_time_with_zone (student_assessment.student_test_start_time) ,
+            'test_end_time'         :format_time_with_zone (student_assessment.student_test_completion_time) 
+        })
+        if student_assessment.assessment_type == 'Final Test':
+            test_summary.update({
+                'overall_rank'  :student_assessment.student_id.student_overall_rank,
+                'college_rank'  :student_assessment.student_id.student_college_rank,
+            })
+        test_topics_wise_scores ={}
+        mcq=[]
+        coding=[]
+        container_client = get_blob_container_client()
+        for ans in answers_status:
+            Qn = ans.get('question_id') 
+            path = f"subjects/{Qn[1:3]}/{Qn[1:-7]}/{Qn[1:-5]}/{'mcq' if Qn[-5]=='m' else 'coding'}/{Qn}.json"
+            if cache.get(path) == None:
+                blobdata = container_client.get_blob_client(path)
+                blob_data = json.loads(blobdata.download_blob().readall())
+                blob_data.update({'Qn_name':Qn})
+                cache.set(path,blob_data)
+            else:
+                blob_data = cache.get(path)
+                cache.set(path,blob_data)
+            blob_data.update({'score_secured':ans.get('score_secured'),
+                              'max_score':int(ans.get('max_score')),
+                            #   'status':ans.get('question_status'),
+                              'status':'Correct' if float(ans.get('score_secured'))==float(ans.get('max_score')) else 'Partial Correct' if float(ans.get('score_secured'))>0 else 'Wrong',
+                              'topic':topics_list.get(ans.get('question_id'))
+                              })
+            if Qn[-5] == 'm':
+                blob_data.update({
+                    'user_answer':mcq_answers.get(ans.get('question_id'),{}).get('entered_ans',''),
+                })
+                mcq.append(blob_data)
+            else:
+
+                testcases =coding_answers.get(ans.get('question_id'),{}).get('testcase_results','')
+                testcases_result =str(len([tc for tc in testcases if str(tc).startswith('TestCase') and testcases.get(tc) == 'Passed']))+'/'+str(len([tc for tc in testcases if str(tc).startswith('TestCase')]))
+                blob_data.update({
+                    'user_answer':coding_answers.get(ans.get('question_id'),{}).get('entered_ans',''),
+                    'testcases' : testcases_result
+                })
+                coding.append(blob_data)
+            test_topics_wise_scores.update({topics_list.get(ans.get('question_id')):
+                                            f'{float(test_topics_wise_scores.get(topics_list.get(ans.get('question_id')),'0/0').split("/")[0])+float(ans.get("score_secured"))}/{float(test_topics_wise_scores.get(topics_list.get(ans.get('question_id')),'0/0').split("/")[1])+float(ans.get("max_score"))}'
+                                            })
+        not_attemted_Qns =[Qn for Qn in test_questions if Qn not in [answered.get('question_id')  for answered in answers_status]]
+        rulesdata = container_client.get_blob_client('lms_rules/rules.json')
+        rules = json.loads(rulesdata.download_blob().readall())
+        for Qn in not_attemted_Qns:
+            path = f"subjects/{Qn[1:3]}/{Qn[1:-7]}/{Qn[1:-5]}/{'mcq' if Qn[-5]=='m' else 'coding'}/{Qn}.json"
+            if cache.get(path) == None:
+                blobdata = container_client.get_blob_client(path)
+                blob_data = json.loads(blobdata.download_blob().readall())
+                blob_data.update({'Qn_name':Qn})
+                cache.set(path,blob_data)
+            else:
+                blob_data = cache.get(path)
+                cache.set(path,blob_data)
+            outoff = 0
+            blob_rules_data = rules.get('mcq' if Qn[-5]=='m' else 'coding') 
+            if Qn[-4]=='e':
+                outoff = [i.get('score') for i in blob_rules_data if i.get('level').lower() == 'level1'][0]
+            elif Qn[-4]=='m':
+                outoff = [i.get('score') for i in blob_rules_data if i.get('level').lower() == 'level2'][0]
+            elif Qn[-4]=='h':
+                outoff = [i.get('score') for i in blob_rules_data if i.get('level').lower() == 'level3'][0]
+            outoff = int(outoff)
+            blob_data.update({'score_secured':0,
+                              'max_score':outoff,
+                            #   'status':ans.get('question_status'),
+                              'status':'Not Attempted',
+                              'topic':topics_list.get(Qn)
+                              })
+            if Qn[-5] == 'm':
+                blob_data.update({
+                    'user_answer':'',
+                })
+                mcq.append(blob_data)
+            else:
+                blob_data.update({
+                    'user_answer':'',
+                    'testcases' : '0/'+str(len(blob_data.get('TestCases')))
+                })
+                coding.append(blob_data)
+        test_topics ={
+
+        }
+        for ans_score in test_topics_wise_scores:
+            if float(test_topics_wise_scores.get(ans_score,'0/0').split("/")[0])/float(test_topics_wise_scores.get(ans_score,'0/0').split("/")[1]) >= 0.7:
+                print(ans_score)
+                if test_topics.get('good',[]) == []:
+                    test_topics.update({'good': [ans_score]})
+                else:
+                    test_topics.get('good').append(ans_score)
+            elif float(test_topics_wise_scores.get(ans_score,'0/0').split("/")[0])/float(test_topics_wise_scores.get(ans_score,'0/0').split("/")[1]) >= 0.4:
+                print(ans_score)
+                if test_topics.get('average',[]) == []:
+                    test_topics.update({'average': [ans_score]})
+                else:
+                    test_topics.get('average').append(ans_score)
+            else:
+                print(ans_score)
+                if test_topics.get('poor',[]) == []:
+                    test_topics.update({'poor': [ans_score]})
+                else:
+                    test_topics.get('poor').append(ans_score)
+                
+
+        response ={
+            'test_summary'  :test_summary,
+            'topics_wise_scores':test_topics_wise_scores,
+            'topics'        :test_topics,
+            'answers'       :{
+                'mcq'       :mcq,
+                'coding'    :coding
+            }
+        }
+        return JsonResponse(response,safe=False,status=200)
+    except Exception as e:
+        print(e)
+        return JsonResponse({"message": "Failed","error":str(e)},safe=False,status=400)

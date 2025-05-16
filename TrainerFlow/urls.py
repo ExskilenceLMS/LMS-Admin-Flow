@@ -22,6 +22,7 @@ urlpatterns = [
     path('filters/report/',t_report.filter_for_Test_Report,name="filters for report"),
     path('tests/report/',t_report.get_tests_Report_details,name="tests report"),
     path('tests/report/<str:testID>/',t_report.get_students_test_report,name="tests report"),
+    path('test/report/<str:student_id>/<str:test_id>/', t_report.student_test_report , name="student test report"),
     # Performance Analysis
     path('filters/analysis/',t_analysis.filter_for_performanceAnalysis,name="filters for analysis"),
     path('analysis/',t_analysis.performanceAnalysis,name="performance analysis"),
