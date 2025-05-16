@@ -63,7 +63,7 @@ def performanceAnalysis(request):
             'College'       :stud.college,
             'Branch'        :stud.branch,
             'Mobile'        :stud.phone,
-            'Score'         :str(stud.student_score)+'/'+str(stud.student_total_score),
+            'Score'         :str(stud.student_score)+'/'+str(stud.student_total_score) if str(stud.student_score)+'/'+str(stud.student_total_score) != '0/0' else '--/--',
             'Score_%'       :str(round(int(stud.student_score)*100/int(stud.student_total_score),2))+'%' if int(stud.student_total_score) != 0 else '0' +'%',
             'Catogory'      :stud.student_catogory,
             'College_Rank'  :stud.student_college_rank if stud.student_college_rank > 0 else '--',    
@@ -73,7 +73,7 @@ def performanceAnalysis(request):
             'No_of_hours'   :round(students_app_usage.get(stud.student_id,0),2),
             'Course'        :stud.course_id.course_name,
             'Batch'         :stud.batch_id.batch_name,
-                          }) for stud in student]  , 
+                          }) for stud in student if not stud.student_id[3:].startswith('ABC')]  , 
         # Student_details = students_details.objects.using('mongodb').filter(**student_filters,del_row=False)
         # [data.update({'student_id':student_data.student_question_details}) for student_data in Student_details]
         return JsonResponse(response,safe=False,status=200)
@@ -136,9 +136,9 @@ def Student_performanceAnalysis(request,student_id):
                     'practice_coding_percentage':0,
                     'weekly_test_percentage':0,
                     'overall_percentage':0,
-                    "Final_Test_score": "-/-",
+                    "Final_Test_score": "--/--",
                     "Final_Test_percentage": '--',
-                    "Internship_Test_score": "-/-",
+                    "Internship_Test_score": "--/--",
                     "Internship_Test_percentage": '--',
 
                     
@@ -227,6 +227,8 @@ def Student_performanceAnalysis(request,student_id):
 
         response_data = {
             'data':{}
+        }
+        Avrage = {
         }
         for i in response.get('weeks').keys():
             response_data.get('data').update({i.split('_')[-1]:{
