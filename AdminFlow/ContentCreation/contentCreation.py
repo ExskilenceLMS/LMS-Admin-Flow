@@ -503,20 +503,19 @@ def content(request):
             'videos': {}
         }
         present_files = {}
-        present_videos={}
+        present_videos = {}
         file_count = 1
         video_count = 1
-      
 
         for key in request.POST:
             if key.startswith('files[') and key.endswith('][text]'):
                 file_index = key.split('[')[1].split(']')[0]
                 file_key = f'files[{file_index}][file]'
-                path_key = f'files[{file_index}][path]'  
+                path_key = f'files[{file_index}][path]'
                 text = request.POST.get(f'files[{file_index}][text]')
                 time = request.POST.get(f'files[{file_index}][time]')
                 level = request.POST.get(f'files[{file_index}][level]')
-                old_path = request.POST.get(path_key)  
+                old_path = request.POST.get(path_key)
                 if file_key in request.FILES:
                     present_files[file_index] = {
                         'file': request.FILES[file_key],
@@ -524,9 +523,9 @@ def content(request):
                         'time': time,
                         'level': level,
                         'is_new': True,
-                        'old_path': old_path 
+                        'old_path': old_path
                     }
-                elif old_path:  
+                elif old_path:
                     present_files[file_index] = {
                         'path': old_path,
                         'text': text,
@@ -545,24 +544,21 @@ def content(request):
             if key.startswith('videos[') and key.endswith('][text]'):
                 video_index = key.split('[')[1].split(']')[0]
                 video_key = f'videos[{video_index}][file]'
-                path_key = f'videos[{video_index}][path]'  
+                path_key = f'videos[{video_index}][path]'
                 text = request.POST.get(f'videos[{video_index}][text]')
                 time = request.POST.get(f'videos[{video_index}][time]')
                 level = request.POST.get(f'videos[{video_index}][level]')
-                old_path = request.POST.get(path_key)  
+                old_path = request.POST.get(path_key)
                 if video_key in request.FILES:
-                    
                     present_videos[video_index] = {
                         'file': request.FILES[video_key],
                         'text': text,
                         'time': time,
                         'level': level,
                         'is_new': True,
-                        'old_path': old_path 
+                        'old_path': old_path
                     }
-                    
-                
-                elif old_path:  
+                elif old_path:
                     present_videos[video_index] = {
                         'path': old_path,
                         'text': text,
@@ -571,7 +567,6 @@ def content(request):
                         'is_new': False
                     }
                 elif video_index in existing_content.get('videos', {}):
-                    
                     present_videos[video_index] = {
                         'path': existing_content['videos'][video_index]['path'],
                         'text': text,
@@ -596,7 +591,6 @@ def content(request):
                     asset_filename = f"{subtopic_id}{file_extension}"
                 else:
                     asset_filename = f"{subtopic_id}{file_count:02}{file_extension}"
-                # asset_filename = f"{subtopic_id}{file_count:02}{file_extension}"
                 asset_blob_name = asset_folder + asset_filename
                 asset_blob_client = container_client.get_blob_client(asset_blob_name)
                 file_path = f"https://{AZURE_ACCOUNT_NAME}.blob.core.windows.net/{AZURE_CONTAINER}/{asset_blob_name}"
@@ -613,7 +607,7 @@ def content(request):
             else:
                 old_path = file_entry['path']
                 old_filename = old_path.split('/')[-1]
-                new_filename = f"{subtopic_id}{file_count:02}{os.path.splitext(old_filename)[1]}"
+                new_filename = f"{subtopic_id}{file_count:02}{os.path.splitext(old_filename)[1]}" if file_count > 1 else f"{subtopic_id}{os.path.splitext(old_filename)[1]}"
                 new_blob_name = asset_folder + new_filename
                 new_path = f"https://{AZURE_ACCOUNT_NAME}.blob.core.windows.net/{AZURE_CONTAINER}/{new_blob_name}"
 
@@ -646,7 +640,7 @@ def content(request):
                 video_obj = video_entry.get('file')
                 video_extension = os.path.splitext(video_obj.name)[1]
                 if not video_obj:
-                    print(f"[ERROR] No video file found in entry: {video_entry}") 
+                    print(f"[ERROR] No video file found in entry: {video_entry}")
                     continue
                 if hasattr(video_obj, 'read'):
                     print('[INFO] File-like object confirmed.')
@@ -677,7 +671,7 @@ def content(request):
             else:
                 old_path = video_entry['path']
                 old_filename = old_path.split('/')[-1]
-                new_filename = f"{subtopic_id}{video_count:02}{os.path.splitext(old_filename)[1]}"
+                new_filename = f"{subtopic_id}{video_count:02}{os.path.splitext(old_filename)[1]}" if video_count > 1 else f"{subtopic_id}{os.path.splitext(old_filename)[1]}"
                 new_blob_name = asset_folder + new_filename
                 new_path = f"https://{AZURE_ACCOUNT_NAME}.blob.core.windows.net/{AZURE_CONTAINER}/{new_blob_name}"
 
@@ -718,9 +712,7 @@ def content(request):
                     })
         for i, video in enumerate(temp_videos, 1):
             content_data['videos'][f'video{i}'] = video
-        
 
-        
         for asset_path in existing_assets:
             if asset_path not in kept_assets or asset_path in assets_to_delete:
                 try:
@@ -737,5 +729,4 @@ def content(request):
         return JsonResponse({'message': 'Content updated successfully'}, status=200)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
-
 
