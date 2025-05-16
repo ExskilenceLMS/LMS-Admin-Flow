@@ -112,6 +112,8 @@ urlpatterns = [
 
     path('is_batch_in_blob/<str:course>/<str:batch>/',daywise_views.is_batch_in_blob,name="is_batch_in_blob"),
     path('get_batch_daywise_json/<str:course>/<str:batch>/',daywise_views.get_batch_daywise_json,name="get_batch_daywise_json"),
+    path('get_batch_subjects/<str:course>/<str:batch>/',daywise_views.get_batch_subjects,name="get_batch_subjects"),
+
     path('update_weekend_holidays/',daywise_views.update_weekend_holidays,name="update_weekend_holidays"),
     path('get_weekend_settings/<str:batch_id>/',daywise_views.get_weekend_settings,name="get_weekend_settings"),
 
