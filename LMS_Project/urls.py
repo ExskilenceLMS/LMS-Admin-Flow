@@ -33,10 +33,12 @@ from AdminFlow.ContentCreation import sqlviews as sql_views
 from AdminFlow.ContentCreation import contentCreation as content_creation_views, mcqBulkUpload as mcqBulkUpload_views
 from AdminFlow import daywise as daywise_views
 from AdminFlow import batchstatus as batchstatus_views 
+from TrainerFlow import LiveUsers
 urlpatterns = [
     path('api/trainer/', include('TrainerFlow.urls')),
     path('admin/', admin.site.urls),
     path("",admin_views.home),
+    path('liveUsers/',LiveUsers.LiveUsers,name="liveUsers"),
 
     path('user/<str:mail>/',login_views.login,name="login"),
     path('add_staff/',login_views.add_staff,name="add_staff"),
