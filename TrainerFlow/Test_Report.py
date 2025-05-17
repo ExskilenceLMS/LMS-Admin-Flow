@@ -181,7 +181,7 @@ def get_students_test_report(request,testID):
                         "Category"      :Student.student_id.student_type,
                         "Max_marks"     :Student.assessment_max_score,
                         "Obtained_marks":Student.assessment_score_secured,
-                        "Percentage"    :Student.assessment_score_secured/Student.assessment_max_score*100,
+                        "Percentage"    :round(Student.assessment_score_secured/Student.assessment_max_score*100,2),
                         "Rank"          :Student.assessment_rank,
                     })
                 else:
@@ -248,7 +248,7 @@ def student_test_report(request,student_id,test_id):
             # 'time_taken_for_completion':round((student_assessment.student_test_start_time - student_assessment.student_test_completion_time ).total_seconds()/60,2),
             'time_taken_for_completion':str(test_time_taken)+' min' if test_time_taken < 60 else str(int(test_time_taken/60))+' hrs '+str(test_time_taken%60)+' min',
             'total_time'            :str(Total_time_given)+' min' if Total_time_given < 60 else str(int(Total_time_given/60))+' hrs '+str(Total_time_given%60)+' min',
-            'score_secured'         :student_assessment.assessment_score_secured,
+            'score_secured'         :sum([score.get('score_secured') for score in answers_status]),
             'max_score'             :student_assessment.assessment_max_score,
             'percentage'            :round((student_assessment.assessment_score_secured/student_assessment.assessment_max_score)*100,2),
             'status'                :student_assessment.assessment_status,
@@ -344,7 +344,7 @@ def student_test_report(request,student_id,test_id):
         }
         for ans_score in test_topics_wise_scores:
             if float(test_topics_wise_scores.get(ans_score,'0/0').split("/")[0])/float(test_topics_wise_scores.get(ans_score,'0/0').split("/")[1]) >= 0.7:
-                print(ans_score)
+                # print(ans_score)
                 if test_topics.get('good',[]) == []:
                     test_topics.update({'good': [ans_score]})
                 else:
