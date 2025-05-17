@@ -101,3 +101,111 @@ def get_batch_daywise_json(request, course, batch):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
+
+@api_view(['GET'])
+def get_batch_subjects(request, course, batch):
+    try:
+        blob_name = f"lms_daywise/{course}/{course}_{batch}.json"
+        blob_client = container_client.get_blob_client(blob_name)
+        if blob_client.exists():
+            download_stream = blob_client.download_blob()
+            json_data = json.loads(download_stream.readall())
+            subjects_in_json = list(json_data.keys())
+            subjects_in_course = get_subjects_in_course(course)
+            print(subjects_in_course)
+            subjects_info = []
+            for subject in subjects_in_course:
+                is_included = subject['subject_name'] in subjects_in_json
+                subjects_info.append({
+                    "subject_id": subject['subject_id'],
+                    "subject_name": subject['subject_name'],
+                    "is_included": is_included
+                })
+
+            return JsonResponse({
+                'exists': True,
+                'message': f'File "{blob_name}" exists in blob storage.',
+                'subjects': subjects_info
+            })
+        else:
+            return JsonResponse({
+                'exists': False,
+                'message': f'File "{blob_name}" does not exist in blob storage.'
+            })
+
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+def get_subjects_in_course(course_id):
+    try:
+        subject_list = []
+        courses_list = courses.objects.filter(del_row=False, course_id=course_id)
+        subject_details = courses.objects.filter(del_row=False, course_id=course_id).values('course_id', 'Existing_Subjects')
+        subject_mapping = {
+            detail['course_id']: detail['Existing_Subjects'].split(',') if detail['Existing_Subjects'] else []
+            for detail in subject_details
+        }
+        for course in courses_list:
+            track_names = course.tracks.split(",") if course.tracks else []
+            for track_name in track_names:
+                track = tracks.objects.filter(track_name=track_name).first()
+                if track:
+                    subjects_for_track = subjects.objects.filter(track_id=track.id, del_row=False)
+
+                    for subject in subjects_for_track:
+                        subject_list.append({
+                            'subject_id': subject.subject_id,
+                            'subject_name': subject.subject_name
+                        })
+        return subject_list
+    except Exception as e:
+        print("Error:", str(e))
+        return {'error': str(e)}
+
+@api_view(['POST'])
+def get_data_of_subject_of_course_plan(request):
+    try:
+        
+        data = json.loads(request.body)
+        course_id = data.get('course_id')
+        subjects= data.get('subjects')
+
+        if not course_id:
+            return JsonResponse({'message': 'course_id is required'}, status=400)
+
+        blob_path = f"lms_courses/{course_id}.json"
+        blob_client = container_client.get_blob_client(blob_path)
+
+        if not blob_client.exists():
+            return JsonResponse({'message': f'Course ID {course_id} not found'}, status=404)
+
+        blob_properties = blob_client.get_blob_properties()
+        current_last_modified = blob_properties.last_modified.timestamp()
+
+        cached_data = cache.get(course_id)
+        if cached_data and cached_data['last_modified'] == current_last_modified:
+            subjects_dict = cached_data['data']
+        else:
+            blob_content = blob_client.download_blob().readall()
+            subjects_list = json.loads(blob_content)
+            
+            subjects_dict = {}
+            for item in subjects_list:
+                for key in item:
+                    subjects_dict[key] = item[key]
+            
+            cache[course_id] = {
+                'data': subjects_dict,
+                'last_modified': current_last_modified
+            }
+
+        return JsonResponse(subjects_dict)
+
+    except json.JSONDecodeError:
+        return JsonResponse({'message': 'Invalid JSON data'}, status=400)
+    except Exception as e:
+        return JsonResponse(
+            {'message': str(e), 'details': 'Error processing request'},
+            status=500
+        )
+   

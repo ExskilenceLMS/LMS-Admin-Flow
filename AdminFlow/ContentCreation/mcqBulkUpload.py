@@ -155,20 +155,21 @@ def bulk_mcq_upload(request):
             created_by = data.get("CreatedBy")
             actual_data = data.get("data", [])
             for d in actual_data:
-                required_keys = ["Sl no", "Question", "Option1", "Option2", "Option3","Option4","subtopic_id"]
+                required_keys = ["Sl no", "Question", "Option1", "Option2", "Option3", "Option4", "subtopic_id"]
                 missing_keys = [key for key in required_keys if key not in d]
                 if missing_keys:
                     error_count += 1
                     failed_questions.append(d["Sl no"])
-                    continue 
-                subtopic_id=d["subtopic_id"]
+                    continue
+
+                subtopic_id = d["subtopic_id"]
                 single_mcq = {
                     "Sl no": d["Sl no"],
                     "Question": d["Question"],
-                    "options": [d["Option1"], d["Option2"], d["Option3"],d["Option4"]],
+                    "options": [d["Option1"], d["Option2"], d["Option3"], d["Option4"]],
                     "Explanation": d.get("Explanation", ""),
-                    "Level": d.get("Level","level1"),
-                    "Template": d.get("Template",1),
+                    "Level": d.get("Level", "level1"),
+                    "Template": d.get("Template", 1),
                     "CreatedBy": created_by,
                     "subtopic_id": subtopic_id,
                 }
@@ -195,7 +196,7 @@ def bulk_mcq_upload(request):
                     mcq_folder = f"{subtopic_folder}mcq/"
                     level_char = 'e' if level == 'level1' else 'm' if level == 'level2' else 'h'
                     file_pattern = f"q{subtopic_id}m{level_char}m"
-                    
+
                     def get_next_number(folder_path, file_pattern):
                         existing_files = list(container_client.list_blobs(name_starts_with=folder_path))
                         existing_numbers = set()
@@ -225,7 +226,8 @@ def bulk_mcq_upload(request):
                     if blob_client.exists():
                         return JsonResponse({'error': f'File {mcq_filename} already exists.'}, status=400)
 
-                    json_data = json.dumps(mcq_data, ensure_ascii=False)
+                    # Dump JSON data with indentation and include newline characters
+                    json_data = json.dumps(mcq_data, ensure_ascii=False, indent=4)
                     encoded_data = json_data.encode('utf-8')
                     blob_client.upload_blob(
                         encoded_data,
@@ -260,8 +262,8 @@ def bulk_mcq_upload(request):
                     error_count += 1
                     failed_questions.append(d["Sl no"])
                     print(f"Error with question {d['Sl no']}: {str(e)}")
-                    continue 
-                
+                    continue
+
             return JsonResponse({
                 'message': 'Bulk MCQ upload complete',
                 'success_count': success_count,
@@ -272,3 +274,4 @@ def bulk_mcq_upload(request):
         return JsonResponse({'error': 'Invalid request method'}, status=400)
     except Exception as e:
         return JsonResponse({'error': f'Internal Server Error: {str(e)}'}, status=500)
+
