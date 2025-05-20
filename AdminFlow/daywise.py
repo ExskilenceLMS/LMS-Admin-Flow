@@ -43,7 +43,6 @@ def update_weekend_holidays(request):
             return JsonResponse({"status": "error", "message": str(e)}, status=500)
     return JsonResponse({"status": "error", "message": "Invalid request method"}, status=405)
 
-
 @api_view(['GET'])
 def get_weekend_settings(request,batch_id):
     if not batch_id:
@@ -209,3 +208,54 @@ def get_data_of_subject_of_course_plan(request):
             status=500
         )
    
+@api_view(['POST'])
+def get_course_plan_of_subjects(request):
+    try:
+        data = json.loads(request.body)
+        course_id = data.get('course_id')
+        subjects = data.get('subjects')  # e.g., ["sq", "py"]
+
+        if not course_id:
+            return JsonResponse({'error': 'Missing course_id in request.'}, status=400)
+
+        blob_name = f"lms_courses/{course_id}.json"
+        blob_client = container_client.get_blob_client(blob_name)
+
+        if not blob_client.exists():
+            return JsonResponse({
+                'exists': False,
+                'message': f'File \"{blob_name}\" does not exist in blob storage.'
+            }, status=404)
+
+        download_stream = blob_client.download_blob()
+        json_data = json.loads(download_stream.readall())
+
+        if not isinstance(json_data, list):
+            return JsonResponse({'error': 'Unexpected JSON structure. Expected a list.'}, status=500)
+
+        # Initialize the result dictionary
+        result = {}
+
+        for item in json_data:
+            if not isinstance(item, dict):
+                continue
+
+            subject_key = list(item.keys())[0]
+
+            if not subjects or subject_key in subjects:
+                result[subject_key] = item[subject_key]
+
+        if not result:
+            available_subjects = [list(d.keys())[0] for d in json_data if isinstance(d, dict)]
+            return JsonResponse({
+                'error': 'Requested subjects not found.',
+                'available_subjects': available_subjects
+            }, status=404)
+
+        return JsonResponse({'data': result}, status=200)
+
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON body.'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+

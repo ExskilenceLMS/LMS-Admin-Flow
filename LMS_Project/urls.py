@@ -118,6 +118,7 @@ urlpatterns = [
 
     path('update_weekend_holidays/',daywise_views.update_weekend_holidays,name="update_weekend_holidays"),
     path('get_weekend_settings/<str:batch_id>/',daywise_views.get_weekend_settings,name="get_weekend_settings"),
+    path('get_course_plan_of_subjects/',daywise_views.get_course_plan_of_subjects,name="get_course_plan_of_subjects"),
 
 
     path('Content_creation/dashboard-data/',content_creation_views.dashboard_data,name='dashboard_data'),
