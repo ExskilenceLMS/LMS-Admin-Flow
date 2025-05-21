@@ -116,7 +116,7 @@ def fetch_roadmap(course_id, subject_id, batch_id):
                 if not isinstance(data, dict):
                     return "0/0"
                 total = sum(sum(v.values()) for v in data.values())
-                return f"{total}/{total}"
+                return f"{total}"
 
             day_data = {
                 "day": entry.day,
